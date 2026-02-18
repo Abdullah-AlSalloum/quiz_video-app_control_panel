@@ -1,0 +1,52 @@
+{
+  "app": {
+    "dashboard": "Dashboard",
+    "search": "Search",
+    "notifications": "Notifications",
+    "newCount": "{count} new",
+    "seeAllNotifications": "See all notifications",
+    "viewProfile": "View profile",
+    "accountSettings": "Account Settings",
+    "logout": "Log out",
+    "siteSearch": "Site Search...",
+    "enterKeywords": "Enter keywords to see results..."
+  },
+    "sidebar": {
+        "home": "Dashboard"
+    },
+    "StatCardsRow": {
+        "totalViews": "Total Views",
+        "totalProfit": "Total Profit",
+        "totalProducts": "Total Products",
+        "totalUsers": "Total Users"
+    },
+    "PaymentsOverview": {
+      "title": "Payments Overview",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "received": "Received",
+      "due": "Due",
+      "receivedAmount": "Received Amount",
+      "dueAmount": "Due Amount"
+    },
+    "ProfitLastWeek": {
+      "title": "Profit last week",
+      "lastWeek": "Last Week",
+      "thisWeek": "This Week",
+      "sales": "Sales",
+      "revenue": "Revenue"
+    },
+    "UsedDevices": {
+      "title": "Used Devices",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "visitors": "Visitors",
+      "desktop": "Desktop",
+      "tablet": "Tablet",
+      "mobile": "Mobile",
+      "unknown": "Unknown"
+    },
+    "RegionLabels": {
+      "title": "Region labels"
+    }
+}

@@ -1,0 +1,53 @@
+{
+  "app": {
+    "dashboard": "لوحة التحكم",
+    "search": "بحث",
+    "notifications": "الإشعارات",
+    "newCount": "{count} جديد",
+    "seeAllNotifications": "عرض كل الإشعارات",
+    "viewProfile": "عرض الملف الشخصي",
+    "accountSettings": "إعدادات الحساب",
+    "logout": "تسجيل الخروج",
+    "siteSearch": "بحث في الموقع...",
+    "enterKeywords": "اكتب كلمات البحث لعرض النتائج..."
+  },
+    "sidebar": {
+        "home": "لوحة التحكم"
+    },
+    "StatCardsRow": {
+        "totalViews": "إجمالي المشاهدات",
+        "totalProfit": "إجمالي الأرباح",
+        "totalProducts": "إجمالي المنتجات",
+        "totalUsers": "إجمالي المستخدمين"
+    },
+    "PaymentsOverview": {
+      "title": "نظرة عامة على المدفوعات",
+      "monthly": "شهريًا",
+      "yearly": "سنويًا",
+      "received": "تم الاستلام",
+      "due": "المستحق",
+      "receivedAmount": "المبلغ المستلم",
+      "dueAmount": "المبلغ المستحق"
+    },
+    "ProfitLastWeek": {
+      "title": "أرباح الأسبوع الماضي",
+      "lastWeek": "الأسبوع الماضي",
+      "thisWeek": "هذا الأسبوع",
+      "sales": "المبيعات",
+      "revenue": "الإيرادات"
+    },
+    "UsedDevices": {
+      "title": "الأجهزة المستخدمة",
+      "monthly": "شهريًا",
+      "yearly": "سنويًا",
+      "visitors": "الزوار",
+      "desktop": "سطح المكتب",
+      "tablet": "اللوحي",
+      "mobile": "الهاتف",
+      "unknown": "غير معروف"
+    },
+    "RegionLabels": {
+      "title": "تسميات المناطق"
+    }
+}
+
