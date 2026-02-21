@@ -1,6 +1,7 @@
 {
   "app": {
     "dashboard": "لوحة التحكم",
+    "courses": "الدورات",
     "search": "بحث",
     "notifications": "الإشعارات",
     "newCount": "{count} جديد",
@@ -48,6 +49,53 @@
     },
     "RegionLabels": {
       "title": "تسميات المناطق"
+    },
+    "courses": {
+      "title": "الدورات",
+      "subtitle": "إدارة دورات التطبيق وحالة النشر.",
+      "refresh": "تحديث",
+      "addCourse": "إضافة دورة",
+      "imageUrl": "رابط الصورة",
+      "uploadImage": "رفع من الجهاز",
+      "uploadingImage": "جاري الرفع...",
+      "uploadError": "تعذر رفع الصورة.",
+      "uploadInvalidType": "يرجى اختيار ملف صورة صالح.",
+      "uploadTooLarge": "حجم الصورة كبير جدًا. الحد الأقصى 8 ميجابايت.",
+      "uploadConfigError": "إعداد رفع Cloudinary غير مكتمل.",
+      "noImagePreview": "لا توجد معاينة للصورة",
+      "loadError": "تعذر تحميل الدورات.",
+      "updateError": "تعذر تحديث حالة الدورة.",
+      "createError": "تعذر إنشاء الدورة.",
+      "createValidationTitle": "عنوان الدورة مطلوب.",
+      "deleteConfirm": "هل تريد حذف هذه الدورة؟",
+      "deleteError": "تعذر حذف الدورة.",
+      "emptyState": "لا توجد دورات.",
+      "table": {
+        "course": "الدورة",
+        "description": "الوصف",
+        "instructor": "المدرّس",
+        "videos": "الفيديوهات",
+        "finalQuiz": "أسئلة الاختبار النهائي",
+        "published": "النشر",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "published": "منشور",
+        "draft": "مسودة"
+      },
+      "actions": {
+        "editSoon": "تعديل التفاصيل (قريبًا)",
+        "edit": "تعديل",
+        "create": "إنشاء",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "remove": "حذف"
+      },
+      "stats": {
+        "totalCourses": "إجمالي الدورات",
+        "publishedCourses": "الدورات المنشورة",
+        "totalVideos": "إجمالي الفيديوهات"
+      }
     }
 }
 

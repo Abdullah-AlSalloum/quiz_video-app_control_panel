@@ -18,6 +18,7 @@ const ResponsiveDrawer: React.FC<ResponsiveDrawerProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

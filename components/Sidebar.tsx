@@ -6,19 +6,23 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import SchoolIcon from '@mui/icons-material/School';
 import Typography from '@mui/material/Typography';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
+import { usePathname } from 'next/navigation';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
+import Link from 'next/link';
 
 const drawerWidth = 240;
 
 const Sidebar: FC = () => {
   const t = useTranslations('app');
   const locale = useLocale();
+  const pathname = usePathname();
 
   const handleLocaleChange = (value: string) => {
     document.cookie = `locale=${value}; path=/; max-age=31536000`;
@@ -47,11 +51,19 @@ const Sidebar: FC = () => {
       </div>
       <List>
         <ListItem disablePadding>
-          <ListItemButton selected>
+          <ListItemButton component={Link} href="/" selected={pathname === '/'}>
             <ListItemIcon sx={{ color: 'inherit' }}>
               <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary={t('dashboard')} />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} href="/Courses" selected={pathname === '/Courses'}>
+            <ListItemIcon sx={{ color: 'inherit' }}>
+              <SchoolIcon />
+            </ListItemIcon>
+            <ListItemText primary={t('courses')} />
           </ListItemButton>
         </ListItem>
         <ListItem>

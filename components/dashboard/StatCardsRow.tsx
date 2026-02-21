@@ -6,11 +6,9 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
 import GroupIcon from '@mui/icons-material/Group';
 import { useTranslations } from 'next-intl';
-import { useLocale } from 'next-intl';
 
 const StatCardsRow: FC = () => {
   const t = useTranslations('StatCardsRow');
-  const locale = useLocale();
 
   return (
     <Box

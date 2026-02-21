@@ -1,6 +1,7 @@
 {
   "app": {
     "dashboard": "Dashboard",
+    "courses": "Courses",
     "search": "Search",
     "notifications": "Notifications",
     "newCount": "{count} new",
@@ -48,5 +49,52 @@
     },
     "RegionLabels": {
       "title": "Region labels"
+    },
+    "courses": {
+      "title": "Courses",
+      "subtitle": "Manage app courses and publishing state.",
+      "refresh": "Refresh",
+      "addCourse": "Add Course",
+      "imageUrl": "Image URL",
+      "uploadImage": "Upload from device",
+      "uploadingImage": "Uploading...",
+      "uploadError": "Failed to upload image.",
+      "uploadInvalidType": "Please select a valid image file.",
+      "uploadTooLarge": "Image is too large. Maximum size is 8 MB.",
+      "uploadConfigError": "Cloudinary upload is not configured.",
+      "noImagePreview": "No image preview",
+      "loadError": "Failed to load courses.",
+      "updateError": "Failed to update course status.",
+      "createError": "Failed to create course.",
+      "createValidationTitle": "Course title is required.",
+      "deleteConfirm": "Are you sure you want to delete this course?",
+      "deleteError": "Failed to delete course.",
+      "emptyState": "No courses found.",
+      "table": {
+        "course": "Course",
+        "description": "Description",
+        "instructor": "Instructor",
+        "videos": "Videos",
+        "finalQuiz": "Final Quiz Questions",
+        "published": "Published",
+        "actions": "Actions"
+      },
+      "status": {
+        "published": "Published",
+        "draft": "Draft"
+      },
+      "actions": {
+        "editSoon": "Edit details (coming soon)",
+        "edit": "Edit",
+        "create": "Create",
+        "save": "Save",
+        "cancel": "Cancel",
+        "remove": "Remove"
+      },
+      "stats": {
+        "totalCourses": "Total Courses",
+        "publishedCourses": "Published Courses",
+        "totalVideos": "Total Videos"
+      }
     }
 }

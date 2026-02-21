@@ -10,18 +10,19 @@ import 'jsvectormap/dist/maps/world-merc.js';
 const RegionLabelsMap = () => {
   const t = useTranslations('RegionLabels');
   const mapRef = useRef<HTMLDivElement | null>(null);
-  const mapInstance = useRef<any>(null);
+  const mapInstance = useRef<InstanceType<typeof jsVectorMap> | null>(null);
 
   useEffect(() => {
-    if (!mapRef.current) return;
+    const mapEl = mapRef.current;
+    if (!mapEl) return;
     if (mapInstance.current) {
       mapInstance.current.destroy();
       mapInstance.current = null;
     }
-    mapRef.current.innerHTML = '';
+    mapEl.innerHTML = '';
 
     mapInstance.current = new jsVectorMap({
-      selector: mapRef.current,
+      selector: mapEl,
       map: 'world_merc',
       backgroundColor: 'transparent',
       zoomButtons: true,
@@ -50,9 +51,7 @@ const RegionLabelsMap = () => {
         mapInstance.current.destroy();
         mapInstance.current = null;
       }
-      if (mapRef.current) {
-        mapRef.current.innerHTML = '';
-      }
+      mapEl.innerHTML = '';
     };
   }, []);
 

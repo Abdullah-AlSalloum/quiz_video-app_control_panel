@@ -22,20 +22,16 @@ export const useThemeMode = (): ThemeModeContextValue => {
 };
 
 const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [mode, setMode] = useState<ThemeMode>('light');
-
-  useEffect(() => {
-    const stored = localStorage.getItem('theme-mode') as ThemeMode | null;
-    if (stored) {
-      setMode(stored);
-      document.documentElement.setAttribute('data-theme', stored);
-      return;
+  const [mode, setMode] = useState<ThemeMode>(() => {
+    if (typeof window === 'undefined') {
+      return 'light';
     }
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initial: ThemeMode = prefersDark ? 'dark' : 'light';
-    setMode(initial);
-    document.documentElement.setAttribute('data-theme', initial);
-  }, []);
+    const stored = localStorage.getItem('theme-mode') as ThemeMode | null;
+    if (stored === 'light' || stored === 'dark') {
+      return stored;
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
 
   useEffect(() => {
     localStorage.setItem('theme-mode', mode);
