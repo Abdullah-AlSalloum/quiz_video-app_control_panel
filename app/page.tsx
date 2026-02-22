@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import StatCardsRow from '../components/dashboard/StatCardsRow';
-import PaymentsOverview from '../components/dashboard/PaymentsOverview';
+import PaymentsOverview from '../components/dashboard/UsersOverview';
 import ProfitLastWeek from '../components/dashboard/ProfitWeek';
 import UsedDevices from '../components/dashboard/UsedDevices';
 import RegionLabelsMap from '../components/dashboard/RegionLabelsMap';

@@ -1,14 +1,75 @@
-import type { FC } from 'react';
+'use client';
+
+import { useEffect, useMemo, useState, type FC } from 'react';
 import Box from '@mui/material/Box';
 import StatCard from './StatCard';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import Inventory2Icon from '@mui/icons-material/Inventory2';
+import SchoolIcon from '@mui/icons-material/School';
+import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import GroupIcon from '@mui/icons-material/Group';
+import QuizIcon from '@mui/icons-material/Quiz';
 import { useTranslations } from 'next-intl';
+
+type CourseSummary = {
+  id: string;
+  videoCount: number;
+};
+
+type UserSummary = {
+  id: string;
+  videoQuizzes: number;
+  finalQuizzes: number;
+};
 
 const StatCardsRow: FC = () => {
   const t = useTranslations('StatCardsRow');
+  const [courses, setCourses] = useState<CourseSummary[]>([]);
+  const [users, setUsers] = useState<UserSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      setLoading(true);
+      try {
+        const [coursesResponse, usersResponse] = await Promise.all([
+          fetch('/api/courses', { cache: 'no-store' }),
+          fetch('/api/users', { cache: 'no-store' }),
+        ]);
+        const coursesData = coursesResponse.ok
+          ? ((await coursesResponse.json()) as { courses?: CourseSummary[] })
+          : { courses: [] };
+        const usersData = usersResponse.ok
+          ? ((await usersResponse.json()) as { users?: UserSummary[] })
+          : { users: [] };
+
+        setCourses(coursesData.courses ?? []);
+        setUsers(usersData.users ?? []);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void loadStats();
+  }, []);
+
+  const totals = useMemo(() => {
+    const totalCourses = courses.length;
+    const totalVideos = courses.reduce((sum, course) => sum + (course.videoCount ?? 0), 0);
+    const totalUsers = users.length;
+    const totalQuizzes = users.reduce(
+      (sum, user) => sum + (user.videoQuizzes ?? 0) + (user.finalQuizzes ?? 0),
+      0,
+    );
+    return { totalCourses, totalVideos, totalUsers, totalQuizzes };
+  }, [courses, users]);
+
+  const display = loading
+    ? { totalCourses: '—', totalVideos: '—', totalUsers: '—', totalQuizzes: '—' }
+    : {
+        totalCourses: String(totals.totalCourses),
+        totalVideos: String(totals.totalVideos),
+        totalUsers: String(totals.totalUsers),
+        totalQuizzes: String(totals.totalQuizzes),
+      };
 
   return (
     <Box
@@ -36,12 +97,12 @@ const StatCardsRow: FC = () => {
               color: '#fff',
             }}
           >
-            <VisibilityIcon />
+            <SchoolIcon />
           </Box>
         }
-        value="3.5K"
-        label={t('totalViews')}
-        change="0.43%"
+        value={display.totalCourses}
+        label={t('totalCourses')}
+        change="-"
         trend="up"
       />
       <StatCard
@@ -58,12 +119,12 @@ const StatCardsRow: FC = () => {
               color: '#fff',
             }}
           >
-            <AttachMoneyIcon />
+            <OndemandVideoIcon />
           </Box>
         }
-        value="$4.2K"
-        label={t('totalProfit')}
-        change="4.35%"
+        value={display.totalVideos}
+        label={t('totalVideos')}
+        change="-"
         trend="up"
       />
       <StatCard
@@ -80,12 +141,12 @@ const StatCardsRow: FC = () => {
               color: '#fff',
             }}
           >
-            <Inventory2Icon />
+            <GroupIcon />
           </Box>
         }
-        value="3.5K"
-        label={t('totalProducts')}
-        change="2.59%"
+        value={display.totalUsers}
+        label={t('totalUsers')}
+        change="-"
         trend="up"
       />
       <StatCard
@@ -102,13 +163,13 @@ const StatCardsRow: FC = () => {
               color: '#fff',
             }}
           >
-            <GroupIcon />
+            <QuizIcon />
           </Box>
         }
-        value="3.5K"
-        label={t('totalUsers')}
-        change="-0.95%"
-        trend="down"
+        value={display.totalQuizzes}
+        label={t('totalQuizzes')}
+        change="-"
+        trend="up"
       />
     </Box>
   );

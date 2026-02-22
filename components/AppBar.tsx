@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FC } from 'react';
+import { useEffect, useMemo, useState, type FC } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -28,11 +28,35 @@ import DialogContent from '@mui/material/DialogContent';
 import CloseIcon from '@mui/icons-material/Close';
 import Badge from '@mui/material/Badge';
 import Button from '@mui/material/Button';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 type AppBarProps = {
   onMenuClick?: () => void;
   showMenu?: boolean;
+};
+
+type CourseSearchItem = {
+  id: string;
+  titleAr: string;
+  descriptionAr: string;
+};
+
+type VideoSearchItem = {
+  id: string;
+  titleAr: string;
+  courseId: string;
+};
+
+type UserSearchItem = {
+  id: string;
+  name: string;
+  surname: string;
+  email: string;
 };
 
 const CustomAppBar: FC<AppBarProps> = ({ onMenuClick, showMenu = false }) => {
@@ -49,6 +73,11 @@ const CustomAppBar: FC<AppBarProps> = ({ onMenuClick, showMenu = false }) => {
   };
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [courseItems, setCourseItems] = useState<CourseSearchItem[]>([]);
+  const [videoItems, setVideoItems] = useState<VideoSearchItem[]>([]);
+  const [userItems, setUserItems] = useState<UserSearchItem[]>([]);
   const [notifAnchorEl, setNotifAnchorEl] = useState<null | HTMLElement>(null);
   const menuOpen = Boolean(anchorEl);
   const notifOpen = Boolean(notifAnchorEl);
@@ -71,7 +100,62 @@ const CustomAppBar: FC<AppBarProps> = ({ onMenuClick, showMenu = false }) => {
   };
   const handleSearchClose = () => {
     setSearchOpen(false);
+    setSearchQuery('');
   };
+
+  useEffect(() => {
+    if (!searchOpen) return;
+    if (courseItems.length || videoItems.length || userItems.length) return;
+
+    const loadSearchData = async () => {
+      setSearchLoading(true);
+      try {
+        const [coursesResponse, videosResponse, usersResponse] = await Promise.all([
+          fetch('/api/courses', { cache: 'no-store' }),
+          fetch('/api/videos', { cache: 'no-store' }),
+          fetch('/api/users', { cache: 'no-store' }),
+        ]);
+
+        const coursesData = coursesResponse.ok
+          ? ((await coursesResponse.json()) as { courses?: CourseSearchItem[] })
+          : { courses: [] };
+        const videosData = videosResponse.ok
+          ? ((await videosResponse.json()) as { videos?: VideoSearchItem[] })
+          : { videos: [] };
+        const usersData = usersResponse.ok
+          ? ((await usersResponse.json()) as { users?: UserSearchItem[] })
+          : { users: [] };
+
+        setCourseItems(coursesData.courses ?? []);
+        setVideoItems(videosData.videos ?? []);
+        setUserItems(usersData.users ?? []);
+      } finally {
+        setSearchLoading(false);
+      }
+    };
+
+    void loadSearchData();
+  }, [searchOpen, courseItems.length, videoItems.length, userItems.length]);
+
+  const filteredResults = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) {
+      return { courses: [], videos: [], users: [] };
+    }
+
+    const courses = courseItems.filter((course) =>
+      `${course.titleAr} ${course.descriptionAr}`.toLowerCase().includes(query),
+    );
+    const videos = videoItems.filter((video) =>
+      `${video.titleAr} ${video.id}`.toLowerCase().includes(query),
+    );
+    const users = userItems.filter((user) =>
+      `${user.name} ${user.surname} ${user.email}`.toLowerCase().includes(query),
+    );
+
+    return { courses, videos, users };
+  }, [courseItems, searchQuery, userItems, videoItems]);
+
   return (
     <AppBar
       position="sticky"
@@ -340,14 +424,98 @@ const CustomAppBar: FC<AppBarProps> = ({ onMenuClick, showMenu = false }) => {
               placeholder={t('siteSearch')}
               sx={{ flex: 1, color: 'inherit' }}
               inputProps={{ 'aria-label': 'site search' }}
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
             />
             <IconButton onClick={handleSearchClose} aria-label="close search">
               <CloseIcon />
             </IconButton>
           </Box>
-          <Box sx={{ px: 2, py: 4, textAlign: 'center', color: 'text.secondary' }}>
-            {t('enterKeywords')}
-          </Box>
+          {searchLoading ? (
+            <Box sx={{ px: 2, py: 4, textAlign: 'center', color: 'text.secondary' }}>
+              {t('searchLoading')}
+            </Box>
+          ) : searchQuery.trim() === '' ? (
+            <Box sx={{ px: 2, py: 4, textAlign: 'center', color: 'text.secondary' }}>
+              {t('enterKeywords')}
+            </Box>
+          ) : filteredResults.courses.length === 0 &&
+            filteredResults.videos.length === 0 &&
+            filteredResults.users.length === 0 ? (
+            <Box sx={{ px: 2, py: 4, textAlign: 'center', color: 'text.secondary' }}>
+              {t('noResults')}
+            </Box>
+          ) : (
+            <Box sx={{ px: 1, py: 1 }}>
+              {filteredResults.courses.length > 0 ? (
+                <Box sx={{ px: 1, py: 1 }}>
+                  <Typography variant="subtitle2" sx={{ px: 1, opacity: 0.7 }}>
+                    {t('courses')}
+                  </Typography>
+                  <List dense>
+                    {filteredResults.courses.map((course) => (
+                      <ListItem key={course.id} disablePadding>
+                        <ListItemButton component={Link} href={`/Courses/${course.id}/videos`} onClick={handleSearchClose}>
+                          <ListItemText
+                            primary={course.titleAr || course.id}
+                            secondary={course.descriptionAr || course.id}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+              ) : null}
+              {filteredResults.videos.length > 0 ? (
+                <>
+                  <Divider sx={{ my: 1 }} />
+                  <Box sx={{ px: 1, py: 1 }}>
+                    <Typography variant="subtitle2" sx={{ px: 1, opacity: 0.7 }}>
+                      {t('videos')}
+                    </Typography>
+                    <List dense>
+                      {filteredResults.videos.map((video) => (
+                        <ListItem key={video.id} disablePadding>
+                          <ListItemButton
+                            component={Link}
+                            href={`/Courses/${video.courseId}/videos`}
+                            onClick={handleSearchClose}
+                          >
+                            <ListItemText
+                              primary={video.titleAr || video.id}
+                              secondary={video.id}
+                            />
+                          </ListItemButton>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Box>
+                </>
+              ) : null}
+              {filteredResults.users.length > 0 ? (
+                <>
+                  <Divider sx={{ my: 1 }} />
+                  <Box sx={{ px: 1, py: 1 }}>
+                    <Typography variant="subtitle2" sx={{ px: 1, opacity: 0.7 }}>
+                      {t('users')}
+                    </Typography>
+                    <List dense>
+                      {filteredResults.users.map((user) => (
+                        <ListItem key={user.id} disablePadding>
+                          <ListItemButton component={Link} href="/users" onClick={handleSearchClose}>
+                            <ListItemText
+                              primary={`${user.name || '-'} ${user.surname || ''}`.trim() || user.email}
+                              secondary={user.email}
+                            />
+                          </ListItemButton>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Box>
+                </>
+              ) : null}
+            </Box>
+          )}
         </DialogContent>
       </Dialog>
     </AppBar>

@@ -1,24 +1,72 @@
 "use client";
 
-import type { FC } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import dynamic from 'next/dynamic';
 
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
+type Range = '7d' | '30d';
+
+type QuizAttemptsResponse = {
+  categories: string[];
+  series: { name: string; data: number[] }[];
+  periodTotal: number;
+  totalAttempts: number;
+};
+
 const ProfitLastWeek: FC = () => {
   const t = useTranslations('ProfitLastWeek');
+  const locale = useLocale();
+  const [range, setRange] = useState<Range>('7d');
+  const [data, setData] = useState<QuizAttemptsResponse | null>(null);
 
-  const categories = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-  const series = [
-    { name: t('sales'), data: [32, 44, 30, 57, 12, 33, 54] },
-    { name: t('revenue'), data: [10, 20, 18, 22, 9, 16, 18] },
-  ];
+  useEffect(() => {
+    const loadData = async () => {
+      const response = await fetch(`/api/analytics/quiz-attempts?range=${range}`, { cache: 'no-store' });
+      if (!response.ok) {
+        setData(null);
+        return;
+      }
+      const json = (await response.json()) as QuizAttemptsResponse;
+      setData(json);
+    };
+
+    void loadData();
+  }, [range]);
+
+  const categories = data?.categories
+    ? data.categories.map((value) => {
+        const [year, month, day] = value.split('-').map(Number);
+        if (!year || !month || !day) return value;
+        const date = new Date(year, month - 1, day);
+        const options: Intl.DateTimeFormatOptions =
+          range === '7d' ? { weekday: 'short' } : { month: 'short', day: 'numeric' };
+        return new Intl.DateTimeFormat(locale, options).format(date);
+      })
+    : [];
+
+  const series = data?.series?.length
+    ? [
+        {
+          name: t('videoAttempts'),
+          data: data.series.find((item) => item.name === 'video')?.data ?? [],
+        },
+        {
+          name: t('finalAttempts'),
+          data: data.series.find((item) => item.name === 'final')?.data ?? [],
+        },
+      ]
+    : [
+        { name: t('videoAttempts'), data: [] },
+        { name: t('finalAttempts'), data: [] },
+      ];
 
   const chartOptions: ApexCharts.ApexOptions = {
     chart: {
@@ -29,7 +77,7 @@ const ProfitLastWeek: FC = () => {
     },
     plotOptions: {
       bar: {
-        columnWidth: '20%',
+        columnWidth: '24%',
         borderRadius: 6
       }
     },
@@ -45,7 +93,6 @@ const ProfitLastWeek: FC = () => {
     },
     yaxis: {
       min: 0,
-      max: 80,
       tickAmount: 4
     },
     colors: ['#7c3aed', '#38bdf8'],
@@ -74,15 +121,16 @@ const ProfitLastWeek: FC = () => {
         </Typography>
         <FormControl size="small">
           <Select
-            value="lastWeek"
+            value={range}
+            onChange={(event) => setRange(event.target.value as Range)}
             sx={{
               borderRadius: 2,
               color: 'var(--surface-text)',
               '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.12)' }
             }}
           >
-            <MenuItem value="lastWeek">{t('lastWeek')}</MenuItem>
-            <MenuItem value="thisWeek">{t('thisWeek')}</MenuItem>
+            <MenuItem value="7d">{t('lastWeek')}</MenuItem>
+            <MenuItem value="30d">{t('thisWeek')}</MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -90,11 +138,11 @@ const ProfitLastWeek: FC = () => {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Box sx={{ width: 12, height: 12, borderRadius: '50%', background: '#7c3aed' }} />
-          <Typography variant="body2" sx={{ opacity: 0.7 }}>{t('sales')}</Typography>
+          <Typography variant="body2" sx={{ opacity: 0.7 }}>{t('videoAttempts')}</Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Box sx={{ width: 12, height: 12, borderRadius: '50%', background: '#38bdf8' }} />
-          <Typography variant="body2" sx={{ opacity: 0.7 }}>{t('revenue')}</Typography>
+          <Typography variant="body2" sx={{ opacity: 0.7 }}>{t('finalAttempts')}</Typography>
         </Box>
       </Box>
 

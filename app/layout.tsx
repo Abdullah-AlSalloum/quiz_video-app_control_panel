@@ -34,7 +34,11 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} dir="ltr">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} style={{ margin: 0, padding: 0 }}>
+      <body
+        suppressHydrationWarning
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{ margin: 0, padding: 0 }}
+      >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>
             <ResponsiveDrawer>

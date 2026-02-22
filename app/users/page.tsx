@@ -115,6 +115,7 @@ export default function UsersPage() {
           <Table size="small">
             <TableHead>
               <TableRow>
+                <TableCell sx={{ width: 56 }}>{t('table.number')}</TableCell>
                 <TableCell>{t('table.name')}</TableCell>
                 <TableCell>{t('table.surname')}</TableCell>
                 <TableCell>{t('table.email')}</TableCell>
@@ -125,19 +126,20 @@ export default function UsersPage() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 5 }}>
+                  <TableCell colSpan={6} align="center" sx={{ py: 5 }}>
                     <CircularProgress />
                   </TableCell>
                 </TableRow>
               ) : rows.length == 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 5, opacity: 0.75 }}>
+                  <TableCell colSpan={6} align="center" sx={{ py: 5, opacity: 0.75 }}>
                     {t('emptyState')}
                   </TableCell>
                 </TableRow>
               ) : (
-                rows.map((row) => (
+                rows.map((row, index) => (
                   <TableRow key={row.id} hover>
+                    <TableCell>{index + 1}</TableCell>
                     <TableCell>{row.name || '-'}</TableCell>
                     <TableCell>{row.surname || '-'}</TableCell>
                     <TableCell>{row.email || '-'}</TableCell>

@@ -1,24 +1,63 @@
 "use client";
 
-import type { FC } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import dynamic from 'next/dynamic';
 
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
+type Range = 'monthly' | 'yearly';
+
+type UsersAnalyticsResponse = {
+  categories: string[];
+  series: { name: string; data: number[] }[];
+  totalUsers: number;
+  periodTotal: number;
+};
+
 const PaymentsOverview: FC = () => {
   const t = useTranslations('PaymentsOverview');
+  const locale = useLocale();
+  const [range, setRange] = useState<Range>('monthly');
+  const [data, setData] = useState<UsersAnalyticsResponse | null>(null);
 
-  const categories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const series = [
-    { name: t('received'), data: [15, 25, 35, 28, 30, 55, 65, 50, 62, 70, 58, 66] },
-    { name: t('due'), data: [10, 20, 22, 26, 24, 45, 80, 65, 78, 90, 72, 60] },
-  ];
+  useEffect(() => {
+    const loadData = async () => {
+      const response = await fetch(`/api/analytics/users?range=${range}`, { cache: 'no-store' });
+      if (!response.ok) {
+        setData(null);
+        return;
+      }
+      const json = (await response.json()) as UsersAnalyticsResponse;
+      setData(json);
+    };
+
+    void loadData();
+  }, [range]);
+
+  const categories = data?.categories
+    ? range === 'yearly'
+      ? data.categories
+      : data.categories.map((value) => {
+          const [year, month] = value.split('-').map(Number);
+          if (!year || !month) return value;
+          const date = new Date(year, month - 1, 1);
+          return new Intl.DateTimeFormat(locale, { month: 'short' }).format(date);
+        })
+    : [];
+
+  const series = data?.series?.length
+    ? data.series.map((item) => ({
+        name: t('newUsers'),
+        data: item.data,
+      }))
+    : [{ name: t('newUsers'), data: [] }];
 
   const chartOptions: ApexCharts.ApexOptions = {
     chart: {
@@ -43,10 +82,9 @@ const PaymentsOverview: FC = () => {
     },
     yaxis: {
       min: 0,
-      max: 100,
       tickAmount: 5,
     },
-    colors: ['#7c3aed', '#38bdf8'],
+    colors: ['#38bdf8'],
     fill: {
       type: 'gradient',
       gradient: {
@@ -79,7 +117,8 @@ const PaymentsOverview: FC = () => {
         </Typography>
         <FormControl size="small">
           <Select
-            value="monthly"
+            value={range}
+            onChange={(event) => setRange(event.target.value as Range)}
             sx={{
               borderRadius: 2,
               color: 'var(--surface-text)',
@@ -100,18 +139,18 @@ const PaymentsOverview: FC = () => {
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
         <Box sx={{ textAlign: 'center' }}>
           <Typography variant="body2" sx={{ opacity: 0.7 }}>
-            {t('receivedAmount')}
+            {t('periodNewUsers')}
           </Typography>
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
-            $580.00
+            {data?.periodTotal ?? 0}
           </Typography>
         </Box>
         <Box sx={{ textAlign: 'center' }}>
           <Typography variant="body2" sx={{ opacity: 0.7 }}>
-            {t('dueAmount')}
+            {t('totalUsers')}
           </Typography>
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
-            $628.00
+            {data?.totalUsers ?? 0}
           </Typography>
         </Box>
       </Box>

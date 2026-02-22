@@ -2,6 +2,7 @@
   "app": {
     "dashboard": "لوحة التحكم",
     "courses": "الدورات",
+    "videos": "الفيديوهات",
     "users": "المستخدمون",
     "search": "بحث",
     "notifications": "الإشعارات",
@@ -11,32 +12,35 @@
     "accountSettings": "إعدادات الحساب",
     "logout": "تسجيل الخروج",
     "siteSearch": "بحث في الموقع...",
-    "enterKeywords": "اكتب كلمات البحث لعرض النتائج..."
+    "enterKeywords": "اكتب كلمات البحث لعرض النتائج...",
+    "searchLoading": "جارٍ تحميل النتائج...",
+    "noResults": "لا توجد نتائج مطابقة."
   },
     "sidebar": {
         "home": "لوحة التحكم"
     },
     "StatCardsRow": {
-        "totalViews": "إجمالي المشاهدات",
-        "totalProfit": "إجمالي الأرباح",
-        "totalProducts": "إجمالي المنتجات",
-        "totalUsers": "إجمالي المستخدمين"
+      "totalCourses": "إجمالي الدورات",
+      "totalVideos": "إجمالي الفيديوهات",
+      "totalUsers": "إجمالي المستخدمين",
+      "totalQuizzes": "إجمالي الاختبارات"
     },
     "PaymentsOverview": {
-      "title": "نظرة عامة على المدفوعات",
+      "title": "نظرة عامة على المستخدمين",
       "monthly": "شهريًا",
       "yearly": "سنويًا",
-      "received": "تم الاستلام",
-      "due": "المستحق",
-      "receivedAmount": "المبلغ المستلم",
-      "dueAmount": "المبلغ المستحق"
+      "newUsers": "مستخدمون جدد",
+      "periodNewUsers": "المستخدمون الجدد (الفترة)",
+      "totalUsers": "إجمالي المستخدمين"
     },
     "ProfitLastWeek": {
-      "title": "أرباح الأسبوع الماضي",
-      "lastWeek": "الأسبوع الماضي",
-      "thisWeek": "هذا الأسبوع",
+      "title": "محاولات الاختبار",
+      "lastWeek": "آخر 7 أيام",
+      "thisWeek": "آخر 30 يومًا",
       "sales": "المبيعات",
-      "revenue": "الإيرادات"
+      "revenue": "الإيرادات",
+      "videoAttempts": "محاولات اختبار الفيديو",
+      "finalAttempts": "محاولات الاختبار النهائي"
     },
     "UsedDevices": {
       "title": "الأجهزة المستخدمة",
@@ -49,7 +53,12 @@
       "unknown": "غير معروف"
     },
     "RegionLabels": {
-      "title": "تسميات المناطق"
+      "title": "المستخدمون حسب الدولة",
+      "week": "آخر 7 أيام",
+      "month": "آخر 30 يومًا",
+      "year": "آخر 12 شهرًا",
+      "users": "مستخدم",
+      "noData": "لا توجد بيانات دول بعد."
     },
     "videos": {
       "title": "الفيديوهات",
@@ -225,6 +234,7 @@
       "emptyState": "لا يوجد مستخدمون.",
       "stats": "إجمالي المستخدمين: {total} · اختبارات الفيديو: {video} · الاختبارات النهائية: {final}",
       "table": {
+        "number": "#",
         "name": "الاسم",
         "surname": "اللقب",
         "email": "البريد الإلكتروني",

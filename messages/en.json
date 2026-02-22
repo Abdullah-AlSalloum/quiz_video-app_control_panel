@@ -2,6 +2,7 @@
   "app": {
     "dashboard": "Dashboard",
     "courses": "Courses",
+    "videos": "Videos",
     "users": "Users",
     "search": "Search",
     "notifications": "Notifications",
@@ -11,32 +12,35 @@
     "accountSettings": "Account Settings",
     "logout": "Log out",
     "siteSearch": "Site Search...",
-    "enterKeywords": "Enter keywords to see results..."
+    "enterKeywords": "Enter keywords to see results...",
+    "searchLoading": "Loading results...",
+    "noResults": "No matching results."
   },
     "sidebar": {
         "home": "Dashboard"
     },
     "StatCardsRow": {
-        "totalViews": "Total Views",
-        "totalProfit": "Total Profit",
-        "totalProducts": "Total Products",
-        "totalUsers": "Total Users"
+      "totalCourses": "Total Courses",
+      "totalVideos": "Total Videos",
+      "totalUsers": "Total Users",
+      "totalQuizzes": "Total Quizzes"
     },
     "PaymentsOverview": {
-      "title": "Payments Overview",
+      "title": "Users Overview",
       "monthly": "Monthly",
       "yearly": "Yearly",
-      "received": "Received",
-      "due": "Due",
-      "receivedAmount": "Received Amount",
-      "dueAmount": "Due Amount"
+      "newUsers": "New users",
+      "periodNewUsers": "New users (period)",
+      "totalUsers": "Total users"
     },
     "ProfitLastWeek": {
-      "title": "Profit last week",
-      "lastWeek": "Last Week",
-      "thisWeek": "This Week",
+      "title": "Quiz attempts",
+      "lastWeek": "Last 7 days",
+      "thisWeek": "Last 30 days",
       "sales": "Sales",
-      "revenue": "Revenue"
+      "revenue": "Revenue",
+      "videoAttempts": "Video quiz attempts",
+      "finalAttempts": "Final quiz attempts"
     },
     "UsedDevices": {
       "title": "Used Devices",
@@ -49,7 +53,12 @@
       "unknown": "Unknown"
     },
     "RegionLabels": {
-      "title": "Region labels"
+      "title": "Users by country",
+      "week": "Last 7 days",
+      "month": "Last 30 days",
+      "year": "Last 12 months",
+      "users": "users",
+      "noData": "No country data yet."
     },
     "videos": {
       "title": "Videos",
@@ -85,7 +94,7 @@
       },
       "actions": {
         "add": "Add Video",
-        "questions": "Questions",
+        "questions": "Qutestions",
         "edit": "Edit",
         "create": "Create",
         "save": "Save",
@@ -140,7 +149,8 @@
       "stats": {
         "totalCourses": "Total Courses",
         "publishedCourses": "Published Courses",
-        "totalVideos": "Total Videos"
+        "totalVideos": "Total Videos",
+        "totalQuizzes": "Total Quizzes"
       }
     },
     "questions": {
@@ -225,6 +235,7 @@
       "emptyState": "No users found.",
       "stats": "Total users: {total} · Video quizzes: {video} · Final quizzes: {final}",
       "table": {
+        "number": "#",
         "name": "Name",
         "surname": "Surname",
         "email": "Email",
