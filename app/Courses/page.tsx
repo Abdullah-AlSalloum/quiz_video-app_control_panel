@@ -676,9 +676,16 @@ export default function CoursesPage() {
                             </IconButton>
                           </span>
                         </Tooltip>
-                        <Tooltip title={t('actions.finalQuizSoon')}>
+                        <Tooltip title={t('actions.finalQuiz')}>
                           <span>
-                            <IconButton size="small" disabled>
+                            <IconButton
+                              size="small"
+                              disabled={savingId === row.id}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                router.push(`/Courses/${row.id}/final-quiz`);
+                              }}
+                            >
                               <QuizIcon fontSize="small" />
                             </IconButton>
                           </span>

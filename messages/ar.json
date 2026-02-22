@@ -63,17 +63,20 @@
       "updateError": "تعذر تحديث الفيديو.",
       "deleteError": "تعذر حذف الفيديو.",
       "deleteConfirm": "هل تريد حذف هذا الفيديو؟",
-      "validationRequired": "معرف الفيديو والعنوان مطلوبان.",
+      "validationRequired": "رابط/معرف الفيديو والعنوان والوصف مطلوبة.",
+      "validationInvalidVideo": "يرجى لصق رابط يوتيوب صحيح أو معرف فيديو صحيح.",
       "emptyState": "لا توجد فيديوهات.",
       "filter": {
         "course": "الدورة",
         "all": "كل الدورات"
       },
       "form": {
-        "videoId": "معرف الفيديو (يوتيوب)"
+        "videoId": "رابط يوتيوب أو معرف الفيديو",
+        "description": "الوصف"
       },
       "table": {
         "titleAr": "العنوان (ع)",
+        "description": "الوصف",
         "course": "الدورة",
         "order": "الترتيب",
         "questions": "الأسئلة",
@@ -81,6 +84,7 @@
       },
       "actions": {
         "add": "إضافة فيديو",
+        "questions": "الأسئلة",
         "edit": "تعديل",
         "create": "إنشاء",
         "save": "حفظ",
@@ -125,7 +129,7 @@
       "actions": {
         "editSoon": "تعديل التفاصيل (قريبًا)",
         "videos": "الفيديوهات",
-        "finalQuizSoon": "الاختبار النهائي (قريبًا)",
+        "finalQuiz": "الاختبار النهائي",
         "edit": "تعديل",
         "create": "إنشاء",
         "save": "حفظ",
@@ -136,6 +140,80 @@
         "totalCourses": "إجمالي الدورات",
         "publishedCourses": "الدورات المنشورة",
         "totalVideos": "إجمالي الفيديوهات"
+      }
+    },
+    "questions": {
+      "title": "أسئلة {video}",
+      "subtitle": "إدارة أسئلة الاختيار المتعدد لهذا الفيديو.",
+      "videoFallback": "الفيديو",
+      "backToVideos": "العودة للفيديوهات",
+      "refresh": "تحديث",
+      "loadError": "تعذر تحميل الأسئلة.",
+      "createError": "تعذر إضافة السؤال.",
+      "updateError": "تعذر تحديث السؤال.",
+      "deleteError": "تعذر حذف السؤال.",
+      "deleteConfirm": "هل تريد حذف هذا السؤال؟",
+      "validationRequired": "نص السؤال والخيارات مطلوبة.",
+      "validationCorrect": "الإجابة الصحيحة يجب أن تطابق أحد الخيارات.",
+      "validationScore": "يجب أن تكون الدرجة أكبر من 0.",
+      "emptyState": "لا توجد أسئلة.",
+      "form": {
+        "question": "السؤال (ع)",
+        "option": "الخيار {index}",
+        "optionPlaceholder": "الخيار {index}",
+        "correct": "الإجابة الصحيحة",
+        "score": "الدرجة"
+      },
+      "table": {
+        "question": "السؤال",
+        "correct": "الصحيح",
+        "score": "الدرجة",
+        "actions": "الإجراءات"
+      },
+      "actions": {
+        "add": "إضافة سؤال",
+        "edit": "تعديل",
+        "create": "إنشاء",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "remove": "حذف"
+      }
+    },
+    "finalQuiz": {
+      "title": "الاختبار النهائي لـ {course}",
+      "subtitle": "إدارة أسئلة الاختبار النهائي لهذه الدورة.",
+      "courseFallback": "الدورة",
+      "backToCourses": "العودة للدورات",
+      "refresh": "تحديث",
+      "loadError": "تعذر تحميل أسئلة الاختبار النهائي.",
+      "createError": "تعذر إضافة سؤال للاختبار النهائي.",
+      "updateError": "تعذر تحديث سؤال الاختبار النهائي.",
+      "deleteError": "تعذر حذف سؤال الاختبار النهائي.",
+      "deleteConfirm": "هل تريد حذف هذا السؤال من الاختبار النهائي؟",
+      "validationRequired": "نص السؤال والخيارات مطلوبة.",
+      "validationCorrect": "الإجابة الصحيحة يجب أن تطابق أحد الخيارات.",
+      "validationScore": "يجب أن تكون الدرجة أكبر من 0.",
+      "emptyState": "لا توجد أسئلة للاختبار النهائي.",
+      "form": {
+        "question": "السؤال (ع)",
+        "option": "الخيار {index}",
+        "optionPlaceholder": "الخيار {index}",
+        "correct": "الإجابة الصحيحة",
+        "score": "الدرجة"
+      },
+      "table": {
+        "question": "السؤال",
+        "correct": "الصحيح",
+        "score": "الدرجة",
+        "actions": "الإجراءات"
+      },
+      "actions": {
+        "add": "إضافة سؤال",
+        "edit": "تعديل",
+        "create": "إنشاء",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "remove": "حذف"
       }
     }
 }

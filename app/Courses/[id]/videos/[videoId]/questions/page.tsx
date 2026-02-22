@@ -20,163 +20,109 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import QuizIcon from '@mui/icons-material/Quiz';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
-type VideoRow = {
-  id: string;
-  videoId: string;
-  titleAr: string;
-  description: string;
-  order: number;
-  questionsCount: number;
+type QuestionRow = {
+  index: number;
+  questionAr: string;
+  optionsAr: string[];
+  correctAnswerAr: string;
+  score: number;
 };
 
-type CourseInfo = {
+type VideoInfo = {
   id: string;
   titleAr: string;
-  descriptionAr: string;
-  imageUrl: string;
-  instructor: string;
-  published: boolean;
 };
 
-export default function CourseVideosPage() {
-  const t = useTranslations('videos');
-  const params = useParams<{ id: string }>();
+const emptyOptions = ['', '', '', ''];
+
+export default function VideoQuestionsPage() {
+  const t = useTranslations('questions');
+  const params = useParams<{ id: string; videoId: string }>();
   const courseId = params?.id ?? '';
-  const defaultDescription = 'هذا الفيديو هو جزء من سلسلة دروس لتعلم اللغة العربية. شاهد الفيديو كاملاً قبل الانتقال إلى الاختبار.';
+  const videoId = params?.videoId ?? '';
 
-  const [course, setCourse] = useState<CourseInfo | null>(null);
-  const [rows, setRows] = useState<VideoRow[]>([]);
+  const [video, setVideo] = useState<VideoInfo | null>(null);
+  const [rows, setRows] = useState<QuestionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [savingId, setSavingId] = useState<string | null>(null);
+  const [savingId, setSavingId] = useState<number | 'create' | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [editingVideo, setEditingVideo] = useState<VideoRow | null>(null);
+  const [editingRow, setEditingRow] = useState<QuestionRow | null>(null);
   const [form, setForm] = useState({
-    videoId: '',
-    titleAr: '',
-    description: defaultDescription,
+    questionAr: '',
+    optionsAr: [...emptyOptions],
+    correctAnswerAr: '',
+    score: 1,
   });
 
-  const parseYouTubeId = (value: string) => {
-    const input = value.trim();
-    if (!input) return '';
-
-    const idPattern = /^[A-Za-z0-9_-]{11}$/;
-    if (idPattern.test(input)) {
-      return input;
-    }
-
-    const queryMatch = input.match(/[?&]v=([A-Za-z0-9_-]{11})/);
-    if (queryMatch?.[1]) {
-      return queryMatch[1];
-    }
-    const shortMatch = input.match(/youtu\.be\/([A-Za-z0-9_-]{11})/);
-    if (shortMatch?.[1]) {
-      return shortMatch[1];
-    }
-    const shortsMatch = input.match(/(?:shorts|embed|live)\/([A-Za-z0-9_-]{11})/);
-    if (shortsMatch?.[1]) {
-      return shortsMatch[1];
-    }
-
-    try {
-      const normalized = /^https?:\/\//i.test(input) ? input : `https://${input}`;
-      const parsed = new URL(normalized);
-      const host = parsed.hostname.replace('www.', '');
-
-      if (host === 'youtu.be') {
-        const candidate = parsed.pathname.replace('/', '').split('/')[0] ?? '';
-        return idPattern.test(candidate) ? candidate : '';
-      }
-
-      if (host.endsWith('youtube.com')) {
-        const queryId = parsed.searchParams.get('v') ?? '';
-        if (idPattern.test(queryId)) {
-          return queryId;
-        }
-        const parts = parsed.pathname.split('/').filter(Boolean);
-        const watchLike = parts[0] === 'shorts' || parts[0] === 'embed' || parts[0] === 'live';
-        if (watchLike) {
-          const pathId = parts[1] ?? '';
-          return idPattern.test(pathId) ? pathId : '';
-        }
-      }
-    } catch {
-      return '';
-    }
-
-    return '';
-  };
-
   const headerTitle = useMemo(() => {
-    return t('courseTitle', { course: course?.titleAr || courseId || t('courseFallback') });
-  }, [course?.titleAr, courseId, t]);
+    const title = video?.titleAr || videoId || t('videoFallback');
+    return t('title', { video: title });
+  }, [t, video?.titleAr, videoId]);
 
-  const loadCourse = useCallback(async () => {
-    if (!courseId) return;
-    const response = await fetch(`/api/courses/${courseId}`, { cache: 'no-store' });
+  const loadQuestions = useCallback(async () => {
+    if (!videoId) return;
+    const response = await fetch(`/api/videos/${videoId}/questions`, { cache: 'no-store' });
     if (!response.ok) {
       throw new Error(t('loadError'));
     }
-    const data = (await response.json()) as { course?: CourseInfo };
-    setCourse(data.course ?? null);
-  }, [courseId, t]);
+    const data = (await response.json()) as { video?: VideoInfo; questions?: unknown[] };
+    const questions = Array.isArray(data.questions) ? data.questions : [];
+    const mapped = questions.map((item, index) => {
+      const question = typeof item === 'object' && item ? item : {};
+      const questionAr = String((question as { question_ar?: string }).question_ar ?? '').trim();
+      const optionsAr = Array.isArray((question as { options_ar?: string[] }).options_ar)
+        ? (question as { options_ar: string[] }).options_ar.map((opt) => String(opt ?? '').trim()).filter(Boolean)
+        : [];
+      const correctAnswerAr = String((question as { correct_answer_ar?: string }).correct_answer_ar ?? '').trim();
+      const score = Number((question as { score?: number }).score ?? 0);
+      return {
+        index,
+        questionAr,
+        optionsAr,
+        correctAnswerAr,
+        score,
+      };
+    });
 
-  const loadVideos = useCallback(async () => {
-    if (!courseId) return;
-    const response = await fetch(`/api/videos?courseId=${encodeURIComponent(courseId)}`, { cache: 'no-store' });
-    if (!response.ok) {
-      throw new Error(t('loadError'));
-    }
-    const data = (await response.json()) as { videos: VideoRow[] };
-    const sorted = [...(data.videos ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-    const needsReindex = sorted.some((row, index) => (row.order ?? 0) !== index + 1);
-    if (needsReindex) {
-      try {
-        await fetch('/api/videos/reindex', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ courseId }),
-        });
-      } catch {
-        // Keep current view even if reindex fails.
-      }
-      const updated = sorted.map((row, index) => ({ ...row, order: index + 1 }));
-      setRows(updated);
-      return;
-    }
-    setRows(sorted);
-  }, [courseId, t]);
+    setVideo(data.video ?? null);
+    setRows(mapped);
+  }, [t, videoId]);
 
   const reloadAll = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      await Promise.all([loadCourse(), loadVideos()]);
+      await loadQuestions();
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : t('loadError'));
     } finally {
       setLoading(false);
     }
-  }, [loadCourse, loadVideos, t]);
+  }, [loadQuestions, t]);
 
   useEffect(() => {
     void reloadAll();
   }, [reloadAll]);
 
   const handleCreateOpen = () => {
-    setForm({ videoId: '', titleAr: '', description: defaultDescription });
+    setForm({
+      questionAr: '',
+      optionsAr: [...emptyOptions],
+      correctAnswerAr: '',
+      score: 1,
+    });
     setCreateOpen(true);
   };
 
@@ -185,12 +131,14 @@ export default function CourseVideosPage() {
     setCreateOpen(false);
   };
 
-  const handleEditOpen = (row: VideoRow) => {
-    setEditingVideo(row);
+  const handleEditOpen = (row: QuestionRow) => {
+    setEditingRow(row);
+    const options = [...row.optionsAr, ...emptyOptions].slice(0, 4);
     setForm({
-      videoId: row.videoId,
-      titleAr: row.titleAr,
-      description: row.description ?? '',
+      questionAr: row.questionAr,
+      optionsAr: options,
+      correctAnswerAr: row.correctAnswerAr,
+      score: row.score || 1,
     });
     setEditOpen(true);
   };
@@ -198,37 +146,48 @@ export default function CourseVideosPage() {
   const handleEditClose = () => {
     if (savingId) return;
     setEditOpen(false);
-    setEditingVideo(null);
+    setEditingRow(null);
+  };
+
+  const validateForm = () => {
+    const questionAr = form.questionAr.trim();
+    const optionsAr = form.optionsAr.map((opt) => opt.trim()).filter(Boolean);
+    const correctAnswerAr = form.correctAnswerAr.trim();
+    const score = Number(form.score);
+
+    if (!questionAr || optionsAr.length < 2) {
+      setError(t('validationRequired'));
+      return null;
+    }
+    if (!correctAnswerAr || !optionsAr.includes(correctAnswerAr)) {
+      setError(t('validationCorrect'));
+      return null;
+    }
+    if (!Number.isFinite(score) || score <= 0) {
+      setError(t('validationScore'));
+      return null;
+    }
+
+    return { questionAr, optionsAr, correctAnswerAr, score };
   };
 
   const handleCreateSave = async () => {
-    if (!courseId) return;
-    if (!form.videoId.trim() || !form.titleAr.trim() || !form.description.trim()) {
-      setError(t('validationRequired'));
-      return;
-    }
-    const parsedVideoId = parseYouTubeId(form.videoId);
-    if (!parsedVideoId) {
-      setError(t('validationInvalidVideo'));
-      return;
-    }
+    if (!videoId) return;
+    const payload = validateForm();
+    if (!payload) return;
     setSavingId('create');
+
     try {
-      const response = await fetch('/api/videos', {
+      const response = await fetch(`/api/videos/${videoId}/questions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          courseId,
-          videoId: parsedVideoId,
-          titleAr: form.titleAr.trim(),
-          description: form.description.trim(),
-        }),
+        body: JSON.stringify(payload),
       });
       if (!response.ok) {
         const errorData = (await response.json().catch(() => ({}))) as { message?: string };
         throw new Error(errorData.message || t('createError'));
       }
-      await loadVideos();
+      await loadQuestions();
       setCreateOpen(false);
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : t('createError'));
@@ -238,72 +197,58 @@ export default function CourseVideosPage() {
   };
 
   const handleEditSave = async () => {
-    if (!editingVideo) return;
-    if (!form.videoId.trim() || !form.titleAr.trim() || !form.description.trim()) {
-      setError(t('validationRequired'));
-      return;
-    }
-    const parsedVideoId = parseYouTubeId(form.videoId);
-    if (!parsedVideoId) {
-      setError(t('validationInvalidVideo'));
-      return;
-    }
-    const previousRows = rows;
-    setSavingId(editingVideo.id);
-    setRows((current) =>
-      current.map((row) =>
-        row.id === editingVideo.id
-          ? {
-              ...row,
-              videoId: parsedVideoId,
-              titleAr: form.titleAr.trim(),
-              description: form.description.trim(),
-            }
-          : row,
-      ),
-    );
+    if (!editingRow) return;
+    const payload = validateForm();
+    if (!payload) return;
+    setSavingId(editingRow.index);
 
     try {
-      const response = await fetch(`/api/videos/${editingVideo.id}`, {
+      const response = await fetch(`/api/videos/${videoId}/questions`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          videoId: parsedVideoId,
-          titleAr: form.titleAr.trim(),
-          description: form.description.trim(),
-        }),
+        body: JSON.stringify({ index: editingRow.index, ...payload }),
       });
       if (!response.ok) {
         const errorData = (await response.json().catch(() => ({}))) as { message?: string };
         throw new Error(errorData.message || t('updateError'));
       }
+      await loadQuestions();
       setEditOpen(false);
     } catch (saveError) {
-      setRows(previousRows);
       setError(saveError instanceof Error ? saveError.message : t('updateError'));
     } finally {
       setSavingId(null);
     }
   };
 
-  const handleDelete = async (row: VideoRow) => {
+  const handleDelete = async (row: QuestionRow) => {
     const confirmDelete = window.confirm(t('deleteConfirm'));
     if (!confirmDelete) return;
-    const previousRows = rows;
-    setRows((current) => current.filter((item) => item.id !== row.id));
-    setSavingId(row.id);
+    setSavingId(row.index);
+
     try {
-      const response = await fetch(`/api/videos/${row.id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/videos/${videoId}/questions`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ index: row.index }),
+      });
       if (!response.ok) {
-        throw new Error(t('deleteError'));
+        const errorData = (await response.json().catch(() => ({}))) as { message?: string };
+        throw new Error(errorData.message || t('deleteError'));
       }
+      await loadQuestions();
     } catch (deleteError) {
-      setRows(previousRows);
       setError(deleteError instanceof Error ? deleteError.message : t('deleteError'));
     } finally {
       setSavingId(null);
     }
   };
+
+  const optionMenuItems = form.optionsAr.map((option, index) => ({
+    value: option.trim(),
+    label: option.trim() || t('form.optionPlaceholder', { index: index + 1 }),
+    key: `option-${index}`,
+  }));
 
   return (
     <Box sx={{ display: 'grid', gap: 3 }}>
@@ -326,12 +271,12 @@ export default function CourseVideosPage() {
             {headerTitle}
           </Typography>
           <Typography variant="body2" sx={{ opacity: 0.75 }}>
-            {t('courseSubtitle')}
+            {t('subtitle')}
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Button component={Link} href="/Courses" startIcon={<ArrowBackIcon />} variant="outlined">
-            {t('backToCourses')}
+          <Button component={Link} href={`/Courses/${courseId}/videos`} startIcon={<ArrowBackIcon />} variant="outlined">
+            {t('backToVideos')}
           </Button>
           <Button startIcon={<AddIcon />} variant="contained" onClick={handleCreateOpen}>
             {t('actions.add')}
@@ -365,60 +310,43 @@ export default function CourseVideosPage() {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>{t('table.titleAr')}</TableCell>
-                <TableCell>{t('table.description')}</TableCell>
-                <TableCell align="center">{t('table.order')}</TableCell>
-                <TableCell align="center">{t('table.questions')}</TableCell>
+                <TableCell>{t('table.question')}</TableCell>
+                <TableCell>{t('table.correct')}</TableCell>
+                <TableCell align="center">{t('table.score')}</TableCell>
                 <TableCell align="center">{t('table.actions')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 5 }}>
+                  <TableCell colSpan={4} align="center" sx={{ py: 5 }}>
                     <CircularProgress />
                   </TableCell>
                 </TableRow>
               ) : rows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 5, opacity: 0.75 }}>
+                  <TableCell colSpan={4} align="center" sx={{ py: 5, opacity: 0.75 }}>
                     {t('emptyState')}
                   </TableCell>
                 </TableRow>
               ) : (
                 rows.map((row) => (
-                  <TableRow key={row.id} hover>
+                  <TableRow key={row.index} hover>
                     <TableCell sx={{ fontWeight: 600 }}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {row.titleAr || row.videoId}
+                        {row.questionAr}
                       </Typography>
                       <Typography variant="caption" sx={{ opacity: 0.6 }}>
-                        {row.videoId}
+                        {row.optionsAr.join(' · ')}
                       </Typography>
                     </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                        {row.description || '-'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">{row.order}</TableCell>
-                    <TableCell align="center">{row.questionsCount}</TableCell>
+                    <TableCell>{row.correctAnswerAr}</TableCell>
+                    <TableCell align="center">{row.score}</TableCell>
                     <TableCell align="center">
                       <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
-                        <Tooltip title={t('actions.questions')}>
-                          <span>
-                            <IconButton
-                              size="small"
-                              component={Link}
-                              href={`/Courses/${courseId}/videos/${row.id}/questions`}
-                            >
-                              <QuizIcon fontSize="small" />
-                            </IconButton>
-                          </span>
-                        </Tooltip>
                         <Tooltip title={t('actions.edit')}>
                           <span>
-                            <IconButton size="small" disabled={savingId === row.id} onClick={() => handleEditOpen(row)}>
+                            <IconButton size="small" disabled={savingId === row.index} onClick={() => handleEditOpen(row)}>
                               <EditIcon fontSize="small" />
                             </IconButton>
                           </span>
@@ -428,7 +356,7 @@ export default function CourseVideosPage() {
                             <IconButton
                               size="small"
                               color="error"
-                              disabled={savingId === row.id}
+                              disabled={savingId === row.index}
                               onClick={() => void handleDelete(row)}
                             >
                               <DeleteIcon fontSize="small" />
@@ -461,24 +389,48 @@ export default function CourseVideosPage() {
         <DialogTitle>{t('actions.add')}</DialogTitle>
         <DialogContent sx={{ display: 'grid', gap: 2, pt: 2.5, overflow: 'visible' }}>
           <TextField
-            label={t('form.videoId')}
-            value={form.videoId}
-            onChange={(event) => setForm((prev) => ({ ...prev, videoId: event.target.value }))}
-            fullWidth
-          />
-          <TextField
-            label={t('table.titleAr')}
-            value={form.titleAr}
-            onChange={(event) => setForm((prev) => ({ ...prev, titleAr: event.target.value }))}
-            fullWidth
-          />
-          <TextField
-            label={t('form.description')}
-            value={form.description}
-            onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
+            label={t('form.question')}
+            value={form.questionAr}
+            onChange={(event) => setForm((prev) => ({ ...prev, questionAr: event.target.value }))}
             fullWidth
             multiline
             minRows={2}
+          />
+          {form.optionsAr.map((option, index) => (
+            <TextField
+              key={`create-option-${index}`}
+              label={t('form.option', { index: index + 1 })}
+              value={option}
+              onChange={(event) =>
+                setForm((prev) => {
+                  const nextOptions = [...prev.optionsAr];
+                  nextOptions[index] = event.target.value;
+                  return { ...prev, optionsAr: nextOptions };
+                })
+              }
+              fullWidth
+            />
+          ))}
+          <TextField
+            select
+            label={t('form.correct')}
+            value={form.correctAnswerAr}
+            onChange={(event) => setForm((prev) => ({ ...prev, correctAnswerAr: event.target.value }))}
+            fullWidth
+          >
+            {optionMenuItems.map((option) => (
+              <MenuItem key={option.key} value={option.value} disabled={!option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            label={t('form.score')}
+            type="number"
+            value={form.score}
+            onChange={(event) => setForm((prev) => ({ ...prev, score: Number(event.target.value) }))}
+            fullWidth
+            inputProps={{ min: 1 }}
           />
         </DialogContent>
         <DialogActions>
@@ -507,25 +459,48 @@ export default function CourseVideosPage() {
         <DialogTitle sx={{ pb: 1 }}>{t('actions.edit')}</DialogTitle>
         <DialogContent sx={{ display: 'grid', gap: 2, pt: 2.5, overflow: 'visible' }}>
           <TextField
-            label={t('form.videoId')}
-            value={form.videoId}
-            onChange={(event) => setForm((prev) => ({ ...prev, videoId: event.target.value }))}
-            fullWidth
-            
-          />
-          <TextField
-            label={t('table.titleAr')}
-            value={form.titleAr}
-            onChange={(event) => setForm((prev) => ({ ...prev, titleAr: event.target.value }))}
-            fullWidth
-          />
-          <TextField
-            label={t('form.description')}
-            value={form.description}
-            onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
+            label={t('form.question')}
+            value={form.questionAr}
+            onChange={(event) => setForm((prev) => ({ ...prev, questionAr: event.target.value }))}
             fullWidth
             multiline
             minRows={2}
+          />
+          {form.optionsAr.map((option, index) => (
+            <TextField
+              key={`edit-option-${index}`}
+              label={t('form.option', { index: index + 1 })}
+              value={option}
+              onChange={(event) =>
+                setForm((prev) => {
+                  const nextOptions = [...prev.optionsAr];
+                  nextOptions[index] = event.target.value;
+                  return { ...prev, optionsAr: nextOptions };
+                })
+              }
+              fullWidth
+            />
+          ))}
+          <TextField
+            select
+            label={t('form.correct')}
+            value={form.correctAnswerAr}
+            onChange={(event) => setForm((prev) => ({ ...prev, correctAnswerAr: event.target.value }))}
+            fullWidth
+          >
+            {optionMenuItems.map((option) => (
+              <MenuItem key={option.key} value={option.value} disabled={!option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            label={t('form.score')}
+            type="number"
+            value={form.score}
+            onChange={(event) => setForm((prev) => ({ ...prev, score: Number(event.target.value) }))}
+            fullWidth
+            inputProps={{ min: 1 }}
           />
         </DialogContent>
         <DialogActions>

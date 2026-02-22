@@ -63,17 +63,20 @@
       "updateError": "Failed to update video.",
       "deleteError": "Failed to delete video.",
       "deleteConfirm": "Are you sure you want to delete this video?",
-      "validationRequired": "Video ID and title are required.",
+      "validationRequired": "Video link/ID, title, and description are required.",
+      "validationInvalidVideo": "Please paste a valid YouTube link or video ID.",
       "emptyState": "No videos found.",
       "filter": {
         "course": "Course",
         "all": "All courses"
       },
       "form": {
-        "videoId": "Video ID (YouTube)"
+        "videoId": "YouTube Link or ID",
+        "description": "Description"
       },
       "table": {
         "titleAr": "Title (AR)",
+        "description": "Description",
         "course": "Course",
         "order": "Order",
         "questions": "Questions",
@@ -81,6 +84,7 @@
       },
       "actions": {
         "add": "Add Video",
+        "questions": "Questions",
         "edit": "Edit",
         "create": "Create",
         "save": "Save",
@@ -125,7 +129,7 @@
       "actions": {
         "editSoon": "Edit details (coming soon)",
         "videos": "Videos",
-        "finalQuizSoon": "Final quiz (coming soon)",
+        "finalQuiz": "Final quiz",
         "edit": "Edit",
         "create": "Create",
         "save": "Save",
@@ -136,6 +140,80 @@
         "totalCourses": "Total Courses",
         "publishedCourses": "Published Courses",
         "totalVideos": "Total Videos"
+      }
+    },
+    "questions": {
+      "title": "Questions for {video}",
+      "subtitle": "Manage multiple choice questions for this video.",
+      "videoFallback": "Video",
+      "backToVideos": "Back to videos",
+      "refresh": "Refresh",
+      "loadError": "Failed to load questions.",
+      "createError": "Failed to add question.",
+      "updateError": "Failed to update question.",
+      "deleteError": "Failed to delete question.",
+      "deleteConfirm": "Are you sure you want to delete this question?",
+      "validationRequired": "Question text and options are required.",
+      "validationCorrect": "Correct answer must match one of the options.",
+      "validationScore": "Score must be greater than 0.",
+      "emptyState": "No questions found.",
+      "form": {
+        "question": "Question (AR)",
+        "option": "Option {index}",
+        "optionPlaceholder": "Option {index}",
+        "correct": "Correct answer",
+        "score": "Score"
+      },
+      "table": {
+        "question": "Question",
+        "correct": "Correct",
+        "score": "Score",
+        "actions": "Actions"
+      },
+      "actions": {
+        "add": "Add Question",
+        "edit": "Edit",
+        "create": "Create",
+        "save": "Save",
+        "cancel": "Cancel",
+        "remove": "Remove"
+      }
+    },
+    "finalQuiz": {
+      "title": "Final quiz for {course}",
+      "subtitle": "Manage final quiz questions for this course.",
+      "courseFallback": "Course",
+      "backToCourses": "Back to courses",
+      "refresh": "Refresh",
+      "loadError": "Failed to load final quiz questions.",
+      "createError": "Failed to add final quiz question.",
+      "updateError": "Failed to update final quiz question.",
+      "deleteError": "Failed to delete final quiz question.",
+      "deleteConfirm": "Are you sure you want to delete this final quiz question?",
+      "validationRequired": "Question text and options are required.",
+      "validationCorrect": "Correct answer must match one of the options.",
+      "validationScore": "Score must be greater than 0.",
+      "emptyState": "No final quiz questions found.",
+      "form": {
+        "question": "Question (AR)",
+        "option": "Option {index}",
+        "optionPlaceholder": "Option {index}",
+        "correct": "Correct answer",
+        "score": "Score"
+      },
+      "table": {
+        "question": "Question",
+        "correct": "Correct",
+        "score": "Score",
+        "actions": "Actions"
+      },
+      "actions": {
+        "add": "Add Question",
+        "edit": "Edit",
+        "create": "Create",
+        "save": "Save",
+        "cancel": "Cancel",
+        "remove": "Remove"
       }
     }
 }
