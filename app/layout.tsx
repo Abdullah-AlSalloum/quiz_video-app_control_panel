@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import "./globals.css";
 import ResponsiveDrawer from "../components/ResponsiveDrawer";
 import Providers from "./providers";
+import Footer from "../components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +45,7 @@ export default async function RootLayout({
             <ResponsiveDrawer>
               <main style={{ flex: 1, padding: 24, background: 'var(--background)', color: 'var(--foreground)' }}>
                 {children}
+                <Footer />
               </main>
             </ResponsiveDrawer>
           </Providers>
