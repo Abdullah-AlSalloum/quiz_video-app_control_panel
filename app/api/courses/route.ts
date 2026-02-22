@@ -17,6 +17,10 @@ export async function GET() {
         const finalQuizCount = Array.isArray(finalQuizRaw)
           ? finalQuizRaw.length
           : 0;
+        const createdAtValue = data.createdAt;
+        const createdAt = typeof createdAtValue?.toMillis === 'function'
+          ? createdAtValue.toMillis()
+          : 0;
         return {
           id: courseId,
           titleAr: data.titleAr ?? '',
@@ -26,6 +30,7 @@ export async function GET() {
           published: Boolean(data.published ?? false),
           videoCount: videosSnapshot.size,
           finalQuizCount,
+          createdAt,
         };
       })
     );
@@ -41,7 +46,6 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as {
       titleAr?: string;
-      titleEn?: string;
       descriptionAr?: string;
       imageUrl?: string;
       instructor?: string;
@@ -58,13 +62,11 @@ export async function POST(request: Request) {
     const descriptionAr = (body.descriptionAr ?? '').trim();
     const instructor = (body.instructor ?? '').trim();
     const imageUrl = (body.imageUrl ?? '').trim();
-    const titleEn = (body.titleEn ?? '').trim();
     const published = typeof body.published === 'boolean' ? body.published : false;
 
     await docRef.set({
       id: courseId,
       titleAr,
-      titleEn,
       descriptionAr,
       imageUrl,
       instructor,
@@ -85,6 +87,7 @@ export async function POST(request: Request) {
           published,
           videoCount: 0,
           finalQuizCount: 0,
+          createdAt: Date.now(),
         },
       },
       { status: 201 },

@@ -50,6 +50,44 @@
     "RegionLabels": {
       "title": "Region labels"
     },
+    "videos": {
+      "title": "Videos",
+      "subtitle": "Browse course videos and question counts.",
+      "courseTitle": "Videos for {course}",
+      "courseSubtitle": "Manage videos for this course.",
+      "courseFallback": "Course",
+      "backToCourses": "Back to courses",
+      "refresh": "Refresh",
+      "loadError": "Failed to load videos.",
+      "createError": "Failed to create video.",
+      "updateError": "Failed to update video.",
+      "deleteError": "Failed to delete video.",
+      "deleteConfirm": "Are you sure you want to delete this video?",
+      "validationRequired": "Video ID and title are required.",
+      "emptyState": "No videos found.",
+      "filter": {
+        "course": "Course",
+        "all": "All courses"
+      },
+      "form": {
+        "videoId": "Video ID (YouTube)"
+      },
+      "table": {
+        "titleAr": "Title (AR)",
+        "course": "Course",
+        "order": "Order",
+        "questions": "Questions",
+        "actions": "Actions"
+      },
+      "actions": {
+        "add": "Add Video",
+        "edit": "Edit",
+        "create": "Create",
+        "save": "Save",
+        "cancel": "Cancel",
+        "remove": "Remove"
+      }
+    },
     "courses": {
       "title": "Courses",
       "subtitle": "Manage app courses and publishing state.",
@@ -71,6 +109,7 @@
       "deleteError": "Failed to delete course.",
       "emptyState": "No courses found.",
       "table": {
+        "number": "#",
         "course": "Course",
         "description": "Description",
         "instructor": "Instructor",
@@ -85,6 +124,8 @@
       },
       "actions": {
         "editSoon": "Edit details (coming soon)",
+        "videos": "Videos",
+        "finalQuizSoon": "Final quiz (coming soon)",
         "edit": "Edit",
         "create": "Create",
         "save": "Save",

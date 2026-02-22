@@ -2,7 +2,23 @@ import admin, { type ServiceAccount as FirebaseServiceAccount } from 'firebase-a
 import fs from 'node:fs';
 import path from 'node:path';
 
-const getServiceAccount = (): FirebaseServiceAccount => {
+const getServiceAccountFromEnv = (): FirebaseServiceAccount | null => {
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+  if (!projectId || !clientEmail || !privateKey) {
+    return null;
+  }
+
+  return {
+    projectId,
+    clientEmail,
+    privateKey: privateKey.replace(/\\n/g, '\n'),
+  } as FirebaseServiceAccount;
+};
+
+const getServiceAccountFromFile = (): FirebaseServiceAccount => {
   const serviceAccountPath = path.resolve(
     process.cwd(),
     '..',
@@ -12,6 +28,10 @@ const getServiceAccount = (): FirebaseServiceAccount => {
   const raw = fs.readFileSync(serviceAccountPath, 'utf-8');
   const parsed = JSON.parse(raw) as FirebaseServiceAccount;
   return parsed;
+};
+
+const getServiceAccount = (): FirebaseServiceAccount => {
+  return getServiceAccountFromEnv() ?? getServiceAccountFromFile();
 };
 
 const initAdmin = () => {

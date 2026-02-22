@@ -26,6 +26,9 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
+import QuizIcon from '@mui/icons-material/Quiz';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 type CourseRow = {
@@ -37,10 +40,12 @@ type CourseRow = {
   published: boolean;
   videoCount: number;
   finalQuizCount: number;
+  createdAt?: number;
 };
 
 export default function CoursesPage() {
   const t = useTranslations('courses');
+  const router = useRouter();
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? 'dzsnl3sgt';
   const maxImageSizeBytes = 8 * 1024 * 1024;
   const [rows, setRows] = useState<CourseRow[]>([]);
@@ -137,7 +142,12 @@ export default function CoursesPage() {
         throw new Error(t('loadError'));
       }
       const data = (await response.json()) as { courses: CourseRow[] };
-      setRows(data.courses ?? []);
+      const nextRows = [...(data.courses ?? [])].sort((a, b) => {
+        const aTime = a.createdAt ?? 0;
+        const bTime = b.createdAt ?? 0;
+        return aTime - bTime;
+      });
+      setRows(nextRows);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : t('loadError'));
     } finally {
@@ -346,13 +356,14 @@ export default function CoursesPage() {
   }, [rows]);
 
   const [columnWidths, setColumnWidths] = useState({
+    number: 60,
     course: 260,
     description: 320,
     instructor: 180,
     videos: 100,
     finalQuiz: 180,
     published: 110,
-    actions: 140,
+    actions: 200,
   });
 
   const resizingRef = useRef<{
@@ -464,6 +475,9 @@ export default function CoursesPage() {
           <Table size="small">
             <TableHead>
               <TableRow>
+                <TableCell align="center" sx={{ width: columnWidths.number, minWidth: columnWidths.number, maxWidth: columnWidths.number }}>
+                  {t('table.number')}
+                </TableCell>
                 <TableCell sx={{ width: columnWidths.course, minWidth: columnWidths.course, maxWidth: columnWidths.course }}>
                   <Box sx={{ position: 'relative', pr: 2 }}>
                     {t('table.course')}
@@ -568,19 +582,27 @@ export default function CoursesPage() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center" sx={{ py: 5 }}>
+                  <TableCell colSpan={8} align="center" sx={{ py: 5 }}>
                     <CircularProgress />
                   </TableCell>
                 </TableRow>
               ) : rows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center" sx={{ py: 5, opacity: 0.75 }}>
+                  <TableCell colSpan={8} align="center" sx={{ py: 5, opacity: 0.75 }}>
                     {t('emptyState')}
                   </TableCell>
                 </TableRow>
               ) : (
-                rows.map((row) => (
-                  <TableRow key={row.id} hover>
+                rows.map((row, index) => (
+                  <TableRow
+                    key={row.id}
+                    hover
+                    onClick={() => router.push(`/Courses/${row.id}/videos`)}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    <TableCell align="center" sx={{ minWidth: columnWidths.number }}>
+                      {index + 1}
+                    </TableCell>
                     <TableCell sx={{ fontWeight: 600, minWidth: columnWidths.course }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                         <Box
@@ -634,14 +656,43 @@ export default function CoursesPage() {
                         <Switch
                           checked={row.published}
                           disabled={savingId === row.id}
+                          onClick={(event) => event.stopPropagation()}
                           onChange={(event) => {
                             void togglePublished(row.id, event.target.checked);
                           }}
                           size="small"
                         />
+                        <Tooltip title={t('actions.videos')}>
+                          <span>
+                            <IconButton
+                              size="small"
+                              disabled={savingId === row.id}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                router.push(`/Courses/${row.id}/videos`);
+                              }}
+                            >
+                              <OndemandVideoIcon fontSize="small" />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
+                        <Tooltip title={t('actions.finalQuizSoon')}>
+                          <span>
+                            <IconButton size="small" disabled>
+                              <QuizIcon fontSize="small" />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
                         <Tooltip title={t('actions.edit')}>
                           <span>
-                            <IconButton size="small" disabled={savingId === row.id} onClick={() => handleEditOpen(row)}>
+                            <IconButton
+                              size="small"
+                              disabled={savingId === row.id}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                handleEditOpen(row);
+                              }}
+                            >
                               <EditIcon fontSize="small" />
                             </IconButton>
                           </span>
@@ -652,7 +703,10 @@ export default function CoursesPage() {
                               size="small"
                               color="error"
                               disabled={savingId === row.id}
-                              onClick={() => void handleDelete(row.id)}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                void handleDelete(row.id);
+                              }}
                             >
                               <DeleteIcon fontSize="small" />
                             </IconButton>
@@ -668,9 +722,21 @@ export default function CoursesPage() {
         </TableContainer>
       </Box>
 
-      <Dialog open={editOpen} onClose={handleEditClose} fullWidth maxWidth="sm">
-        <DialogTitle>{t('actions.edit')}</DialogTitle>
-        <DialogContent sx={{ display: 'grid', gap: 2, pt: 2 }}>
+      <Dialog
+        open={editOpen}
+        onClose={handleEditClose}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            background: 'var(--surface)',
+            color: 'var(--surface-text)',
+            borderRadius: 3,
+          },
+        }}
+      >
+        <DialogTitle sx={{ pb: 1 }}>{t('actions.edit')}</DialogTitle>
+        <DialogContent sx={{ display: 'grid', gap: 2, pt: 2.5, overflow: 'visible' }}>
           <TextField
             label={t('table.course')}
             value={editForm.titleAr}
@@ -758,7 +824,19 @@ export default function CoursesPage() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={createOpen} onClose={handleCreateClose} fullWidth maxWidth="sm">
+      <Dialog
+        open={createOpen}
+        onClose={handleCreateClose}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            background: 'var(--surface)',
+            color: 'var(--surface-text)',
+            borderRadius: 3,
+          },
+        }}
+      >
         <DialogTitle>{t('addCourse')}</DialogTitle>
         <DialogContent sx={{ display: 'grid', gap: 2, pt: 2 }}>
           <TextField

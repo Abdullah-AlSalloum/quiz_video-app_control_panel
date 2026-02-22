@@ -8,6 +8,33 @@ const resolveCourseId = async (context: RouteContext) => {
   return resolvedParams.id;
 };
 
+export async function GET(_request: Request, context: RouteContext) {
+  try {
+    const courseId = await resolveCourseId(context);
+    if (!courseId) {
+      return NextResponse.json({ message: 'Missing course id.' }, { status: 400 });
+    }
+    const doc = await adminDb.collection('courses').doc(courseId).get();
+    if (!doc.exists) {
+      return NextResponse.json({ message: 'Course not found.' }, { status: 404 });
+    }
+    const data = doc.data() ?? {};
+    return NextResponse.json({
+      course: {
+        id: courseId,
+        titleAr: data.titleAr ?? '',
+        descriptionAr: data.descriptionAr ?? '',
+        imageUrl: data.imageUrl ?? '',
+        instructor: data.instructor ?? '',
+        published: Boolean(data.published ?? false),
+      },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to load course.';
+    return NextResponse.json({ message }, { status: 500 });
+  }
+}
+
 export async function PATCH(request: Request, context: RouteContext) {
   try {
     const body = await request.json();

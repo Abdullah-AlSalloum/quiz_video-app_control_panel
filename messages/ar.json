@@ -50,6 +50,44 @@
     "RegionLabels": {
       "title": "تسميات المناطق"
     },
+    "videos": {
+      "title": "الفيديوهات",
+      "subtitle": "استعراض فيديوهات الدورات وعدد الأسئلة.",
+      "courseTitle": "فيديوهات {course}",
+      "courseSubtitle": "إدارة فيديوهات هذه الدورة.",
+      "courseFallback": "الدورة",
+      "backToCourses": "العودة للدورات",
+      "refresh": "تحديث",
+      "loadError": "تعذر تحميل الفيديوهات.",
+      "createError": "تعذر إنشاء الفيديو.",
+      "updateError": "تعذر تحديث الفيديو.",
+      "deleteError": "تعذر حذف الفيديو.",
+      "deleteConfirm": "هل تريد حذف هذا الفيديو؟",
+      "validationRequired": "معرف الفيديو والعنوان مطلوبان.",
+      "emptyState": "لا توجد فيديوهات.",
+      "filter": {
+        "course": "الدورة",
+        "all": "كل الدورات"
+      },
+      "form": {
+        "videoId": "معرف الفيديو (يوتيوب)"
+      },
+      "table": {
+        "titleAr": "العنوان (ع)",
+        "course": "الدورة",
+        "order": "الترتيب",
+        "questions": "الأسئلة",
+        "actions": "الإجراءات"
+      },
+      "actions": {
+        "add": "إضافة فيديو",
+        "edit": "تعديل",
+        "create": "إنشاء",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "remove": "حذف"
+      }
+    },
     "courses": {
       "title": "الدورات",
       "subtitle": "إدارة دورات التطبيق وحالة النشر.",
@@ -71,6 +109,7 @@
       "deleteError": "تعذر حذف الدورة.",
       "emptyState": "لا توجد دورات.",
       "table": {
+        "number": "#",
         "course": "الدورة",
         "description": "الوصف",
         "instructor": "المدرّس",
@@ -85,6 +124,8 @@
       },
       "actions": {
         "editSoon": "تعديل التفاصيل (قريبًا)",
+        "videos": "الفيديوهات",
+        "finalQuizSoon": "الاختبار النهائي (قريبًا)",
         "edit": "تعديل",
         "create": "إنشاء",
         "save": "حفظ",
