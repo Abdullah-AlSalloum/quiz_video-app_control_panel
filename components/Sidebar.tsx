@@ -7,6 +7,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SchoolIcon from '@mui/icons-material/School';
+import PeopleIcon from '@mui/icons-material/People';
 import Typography from '@mui/material/Typography';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
@@ -64,6 +65,14 @@ const Sidebar: FC = () => {
               <SchoolIcon />
             </ListItemIcon>
             <ListItemText primary={t('courses')} />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} href="/users" selected={pathname === '/users'}>
+            <ListItemIcon sx={{ color: 'inherit' }}>
+              <PeopleIcon />
+            </ListItemIcon>
+            <ListItemText primary={t('users')} />
           </ListItemButton>
         </ListItem>
         <ListItem>

@@ -2,6 +2,7 @@
   "app": {
     "dashboard": "Dashboard",
     "courses": "Courses",
+    "users": "Users",
     "search": "Search",
     "notifications": "Notifications",
     "newCount": "{count} new",
@@ -214,6 +215,21 @@
         "save": "Save",
         "cancel": "Cancel",
         "remove": "Remove"
+      }
+    },
+    "users": {
+      "title": "Users",
+      "subtitle": "People who logged in to the app.",
+      "refresh": "Refresh",
+      "loadError": "Failed to load users.",
+      "emptyState": "No users found.",
+      "stats": "Total users: {total} · Video quizzes: {video} · Final quizzes: {final}",
+      "table": {
+        "name": "Name",
+        "surname": "Surname",
+        "email": "Email",
+        "videoQuizzes": "Video quizzes",
+        "finalQuizzes": "Final quizzes"
       }
     }
 }
