@@ -5,11 +5,9 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const courseId = searchParams.get('courseId');
-    let query = adminDb.collection('videos');
-    if (courseId) {
-      query = query.where('courseId', '==', courseId);
-    }
-    const snapshot = await query.get();
+    const snapshot = courseId
+      ? await adminDb.collection('videos').where('courseId', '==', courseId).get()
+      : await adminDb.collection('videos').get();
     const videos = snapshot.docs.map((doc) => {
       const data = doc.data();
       const questions = Array.isArray(data.questions) ? data.questions.length : 0;
