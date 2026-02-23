@@ -37,7 +37,7 @@ const ResponsiveDrawer: React.FC<ResponsiveDrawerProps> = ({ children }) => {
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
+          ModalProps={{ keepMounted: false }}
           sx={{
             [`& .MuiDrawer-paper`]: {
               width: drawerWidth,

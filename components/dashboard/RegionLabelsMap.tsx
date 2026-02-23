@@ -7,8 +7,6 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useTranslations } from 'next-intl';
 import 'jsvectormap/dist/jsvectormap.css';
-import jsVectorMap from 'jsvectormap';
-import 'jsvectormap/dist/maps/world-merc.js';
 
 type Range = 'week' | 'month' | 'year';
 
@@ -25,10 +23,12 @@ type CountriesResponse = {
 
 const RegionLabelsMap = () => {
   const t = useTranslations('RegionLabels');
+  const usersLabel = t('users');
   const mapRef = useRef<HTMLDivElement | null>(null);
-  const mapInstance = useRef<InstanceType<typeof jsVectorMap> | null>(null);
+  const mapInstance = useRef<{ destroy: () => void } | null>(null);
   const [range, setRange] = useState<Range>('month');
   const [data, setData] = useState<CountriesResponse | null>(null);
+  const [mapError, setMapError] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -67,47 +67,69 @@ const RegionLabelsMap = () => {
     }
     mapEl.innerHTML = '';
 
-    mapInstance.current = new jsVectorMap({
-      selector: mapEl,
-      map: 'world_merc',
-      backgroundColor: 'transparent',
-      zoomButtons: true,
-      regionStyle: {
-        initial: {
-          fill: '#cbd5e1',
-          stroke: '#475569',
-          strokeWidth: 0.6
-        },
-        hover: {
-          fill: '#5b6bf2'
-        }
-      },
-      markers: [],
-      series: {
-        regions: [
-          {
-            values,
-            scale: ['#cbd5e1', '#1d4ed8'],
-            normalizeFunction: 'polynomial'
-          }
-        ]
-      },
-      regionTooltip: {
-        render: (code: string, name: string) => {
-          const count = values[code] ?? 0;
-          return `${name} (${code}) - ${count} ${t('users')}`;
+    let cancelled = false;
+
+    const initMap = async () => {
+      try {
+        const [{ default: JsVectorMap }] = await Promise.all([
+          import('jsvectormap'),
+          import('jsvectormap/dist/maps/world-merc.js'),
+        ]);
+
+        if (cancelled || !mapRef.current) return;
+
+        mapInstance.current = new JsVectorMap({
+          selector: mapRef.current,
+          map: 'world_merc',
+          backgroundColor: 'transparent',
+          zoomButtons: true,
+          regionStyle: {
+            initial: {
+              fill: '#cbd5e1',
+              stroke: '#475569',
+              strokeWidth: 0.6,
+            },
+            hover: {
+              fill: '#5b6bf2',
+            },
+          },
+          markers: [],
+          series: {
+            regions: [
+              {
+                values,
+                scale: ['#cbd5e1', '#1d4ed8'],
+                normalizeFunction: 'polynomial',
+              },
+            ],
+          },
+          regionTooltip: {
+            render: (code: string, name: string) => {
+              const count = values[code] ?? 0;
+              return `${name} (${code}) - ${count} ${usersLabel}`;
+            },
+          },
+        });
+
+        setMapError(false);
+      } catch {
+        if (!cancelled) {
+          setMapError(true);
         }
       }
-    });
+    };
+
+    void initMap();
 
     return () => {
+      cancelled = true;
       if (mapInstance.current) {
         mapInstance.current.destroy();
         mapInstance.current = null;
       }
       mapEl.innerHTML = '';
     };
-  }, [t, values]);
+  }, [usersLabel, values]);
 
   return (
     <Box
@@ -140,6 +162,11 @@ const RegionLabelsMap = () => {
         </FormControl>
       </Box>
       <Box className="region-map" sx={{ height: 420 }} ref={mapRef} />
+      {mapError ? (
+        <Typography variant="body2" sx={{ mt: 1, opacity: 0.7 }}>
+          {t('noData')}
+        </Typography>
+      ) : null}
       <Box sx={{ mt: 2, display: 'grid', gap: 1 }}>
         {topCountries.length === 0 ? (
           <Typography variant="body2" sx={{ opacity: 0.7 }}>
