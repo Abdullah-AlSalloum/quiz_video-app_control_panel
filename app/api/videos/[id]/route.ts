@@ -84,9 +84,6 @@ export async function PATCH(request: Request, context: RouteContext) {
     }
     if (typeof body.description === 'string') {
       const trimmedDescription = body.description.trim();
-      if (!trimmedDescription) {
-        return NextResponse.json({ message: 'Description is required.' }, { status: 400 });
-      }
       updates.description = trimmedDescription;
       updates.description_ar = trimmedDescription;
     }

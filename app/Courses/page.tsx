@@ -64,6 +64,8 @@ export default function CoursesPage() {
   const [creating, setCreating] = useState(false);
   const [uploadingCreateImage, setUploadingCreateImage] = useState(false);
   const [uploadingEditImage, setUploadingEditImage] = useState(false);
+  const [createPreviewError, setCreatePreviewError] = useState(false);
+  const [editPreviewError, setEditPreviewError] = useState(false);
   const [createForm, setCreateForm] = useState({
     titleAr: '',
     descriptionAr: '',
@@ -204,6 +206,7 @@ export default function CoursesPage() {
 
   const handleEditOpen = (course: CourseRow) => {
     setEditingCourse(course);
+    setEditPreviewError(false);
     setEditForm({
       titleAr: course.titleAr,
       descriptionAr: course.descriptionAr,
@@ -261,6 +264,7 @@ export default function CoursesPage() {
   };
 
   const handleCreateOpen = () => {
+    setCreatePreviewError(false);
     setCreateForm({
       titleAr: '',
       descriptionAr: '',
@@ -322,6 +326,7 @@ export default function CoursesPage() {
     setError(null);
     try {
       const uploadedUrl = await uploadToCloudinary(file);
+      setCreatePreviewError(false);
       setCreateForm((prev) => ({ ...prev, imageUrl: uploadedUrl }));
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : t('uploadError'));
@@ -339,6 +344,7 @@ export default function CoursesPage() {
     setError(null);
     try {
       const uploadedUrl = await uploadToCloudinary(file);
+      setEditPreviewError(false);
       setEditForm((prev) => ({ ...prev, imageUrl: uploadedUrl }));
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : t('uploadError'));
@@ -405,6 +411,14 @@ export default function CoursesPage() {
       window.removeEventListener('mouseup', stopResize);
     };
   }, [handleMouseMove, stopResize]);
+
+  useEffect(() => {
+    setEditPreviewError(false);
+  }, [editForm.imageUrl]);
+
+  useEffect(() => {
+    setCreatePreviewError(false);
+  }, [createForm.imageUrl]);
 
   return (
     <Box sx={{ display: 'grid', gap: 3 }}>
@@ -748,6 +762,7 @@ export default function CoursesPage() {
             label={t('table.course')}
             value={editForm.titleAr}
             onChange={(event) => setEditForm((prev) => ({ ...prev, titleAr: event.target.value }))}
+            sx={{ mt: 0.5 }}
             fullWidth
           />
           <TextField
@@ -802,7 +817,7 @@ export default function CoursesPage() {
                 justifyContent: 'center',
               }}
             >
-              {editForm.imageUrl ? (
+              {editForm.imageUrl && !editPreviewError ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={editForm.imageUrl}
@@ -810,6 +825,7 @@ export default function CoursesPage() {
                   width={140}
                   height={90}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={() => setEditPreviewError(true)}
                 />
               ) : (
                 <Typography variant="caption" sx={{ opacity: 0.7 }}>
@@ -845,11 +861,12 @@ export default function CoursesPage() {
         }}
       >
         <DialogTitle>{t('addCourse')}</DialogTitle>
-        <DialogContent sx={{ display: 'grid', gap: 2, pt: 2 }}>
+        <DialogContent sx={{ display: 'grid', gap: 2, pt: 2.5, overflow: 'visible' }}>
           <TextField
             label={t('table.course')}
             value={createForm.titleAr}
             onChange={(event) => setCreateForm((prev) => ({ ...prev, titleAr: event.target.value }))}
+            sx={{ mt: 0.5 }}
             fullWidth
           />
           <TextField
@@ -904,7 +921,7 @@ export default function CoursesPage() {
                 justifyContent: 'center',
               }}
             >
-              {createForm.imageUrl ? (
+              {createForm.imageUrl && !createPreviewError ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={createForm.imageUrl}
@@ -912,6 +929,7 @@ export default function CoursesPage() {
                   width={140}
                   height={90}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={() => setCreatePreviewError(true)}
                 />
               ) : (
                 <Typography variant="caption" sx={{ opacity: 0.7 }}>

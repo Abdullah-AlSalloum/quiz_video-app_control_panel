@@ -73,7 +73,7 @@
       "updateError": "Failed to update video.",
       "deleteError": "Failed to delete video.",
       "deleteConfirm": "Are you sure you want to delete this video?",
-      "validationRequired": "Video link/ID, title, and description are required.",
+      "validationRequired": "Video link/ID and title are required.",
       "validationInvalidVideo": "Please paste a valid YouTube link or video ID.",
       "emptyState": "No videos found.",
       "filter": {

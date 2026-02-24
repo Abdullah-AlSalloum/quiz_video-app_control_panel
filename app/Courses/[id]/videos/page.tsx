@@ -52,7 +52,6 @@ export default function CourseVideosPage() {
   const t = useTranslations('videos');
   const params = useParams<{ id: string }>();
   const courseId = params?.id ?? '';
-  const defaultDescription = 'هذا الفيديو هو جزء من سلسلة دروس لتعلم اللغة العربية. شاهد الفيديو كاملاً قبل الانتقال إلى الاختبار.';
 
   const [course, setCourse] = useState<CourseInfo | null>(null);
   const [rows, setRows] = useState<VideoRow[]>([]);
@@ -65,7 +64,7 @@ export default function CourseVideosPage() {
   const [form, setForm] = useState({
     videoId: '',
     titleAr: '',
-    description: defaultDescription,
+    description: '',
   });
 
   const parseYouTubeId = (value: string) => {
@@ -176,7 +175,7 @@ export default function CourseVideosPage() {
   }, [reloadAll]);
 
   const handleCreateOpen = () => {
-    setForm({ videoId: '', titleAr: '', description: defaultDescription });
+    setForm({ videoId: '', titleAr: '', description: '' });
     setCreateOpen(true);
   };
 
@@ -203,7 +202,7 @@ export default function CourseVideosPage() {
 
   const handleCreateSave = async () => {
     if (!courseId) return;
-    if (!form.videoId.trim() || !form.titleAr.trim() || !form.description.trim()) {
+    if (!form.videoId.trim() || !form.titleAr.trim()) {
       setError(t('validationRequired'));
       return;
     }
@@ -239,7 +238,7 @@ export default function CourseVideosPage() {
 
   const handleEditSave = async () => {
     if (!editingVideo) return;
-    if (!form.videoId.trim() || !form.titleAr.trim() || !form.description.trim()) {
+    if (!form.videoId.trim() || !form.titleAr.trim()) {
       setError(t('validationRequired'));
       return;
     }

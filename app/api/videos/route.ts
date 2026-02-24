@@ -64,7 +64,7 @@ export async function GET(request: Request) {
         id: doc.id,
         videoId: data.id ?? data.youtubeId ?? doc.id,
         titleAr: data.title_ar ?? '',
-        description: data.description ?? data.description_ar ?? data.title_ar ?? '',
+        description: data.description ?? data.description_ar ?? '',
         titleEn: data.title_en ?? '',
         order: typeof data.order === 'number' ? data.order : 0,
         courseId: data.courseId ?? '',
@@ -92,8 +92,6 @@ export async function POST(request: Request) {
     const videoId = parseYouTubeId(body.videoId ?? '');
     const titleAr = (body.titleAr ?? '').trim();
     const description = (body.description ?? '').trim();
-    const defaultDescription =
-      'هذا الفيديو هو جزء من سلسلة دروس لتعلم اللغة العربية. شاهد الفيديو كاملاً قبل الانتقال إلى الاختبار.';
     let order = typeof body.order === 'number' ? body.order : 0;
 
     if (!courseId || !videoId || !titleAr) {
@@ -117,8 +115,8 @@ export async function POST(request: Request) {
       id: videoId,
       youtubeId: videoId,
       title_ar: titleAr,
-      description: description || defaultDescription,
-      description_ar: description || defaultDescription,
+      description,
+      description_ar: description,
       order,
       courseId,
       questions: [],

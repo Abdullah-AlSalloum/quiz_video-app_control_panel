@@ -73,7 +73,7 @@
       "updateError": "تعذر تحديث الفيديو.",
       "deleteError": "تعذر حذف الفيديو.",
       "deleteConfirm": "هل تريد حذف هذا الفيديو؟",
-      "validationRequired": "رابط/معرف الفيديو والعنوان والوصف مطلوبة.",
+      "validationRequired": "رابط/معرف الفيديو والعنوان مطلوبان.",
       "validationInvalidVideo": "يرجى لصق رابط يوتيوب صحيح أو معرف فيديو صحيح.",
       "emptyState": "لا توجد فيديوهات.",
       "filter": {
