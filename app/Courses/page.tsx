@@ -94,7 +94,8 @@ export default function CoursesPage() {
       });
 
       if (!signatureResponse.ok) {
-        throw new Error(t('uploadError'));
+        const errorData = (await signatureResponse.json().catch(() => ({}))) as { message?: string };
+        throw new Error(errorData.message || t('uploadError'));
       }
 
       const signatureData = (await signatureResponse.json()) as {
@@ -121,7 +122,10 @@ export default function CoursesPage() {
       });
 
       if (!response.ok) {
-        throw new Error(t('uploadError'));
+        const errorData = (await response.json().catch(() => ({}))) as {
+          error?: { message?: string };
+        };
+        throw new Error(errorData.error?.message || t('uploadError'));
       }
 
       const data = (await response.json()) as { secure_url?: string };
