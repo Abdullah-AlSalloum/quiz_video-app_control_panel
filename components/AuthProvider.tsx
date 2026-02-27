@@ -46,7 +46,7 @@ const defaultProfile = {
   role: 'user' as Role,
 };
 
-const SEED_ADMIN_EMAIL = 'admin@admin.com';
+const SEED_ADMIN_EMAIL = 'yaser@tajweedcor2026.com';
 
 const isSeedAdmin = (email: string | null | undefined) =>
   (email ?? '').trim().toLowerCase() === SEED_ADMIN_EMAIL;
