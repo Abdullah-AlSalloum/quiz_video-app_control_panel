@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Drawer from '@mui/material/Drawer';
+import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 import AppBar from './AppBar';
 
@@ -13,6 +14,7 @@ interface ResponsiveDrawerProps {
 const drawerWidth = 240;
 
 const ResponsiveDrawer: React.FC<ResponsiveDrawerProps> = ({ children }) => {
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const isMobile = useMediaQuery('(max-width:900px)', { noSsr: true });
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -28,6 +30,10 @@ const ResponsiveDrawer: React.FC<ResponsiveDrawerProps> = ({ children }) => {
 
   if (!mounted) {
     return null;
+  }
+
+  if (pathname === '/login') {
+    return <>{children}</>;
   }
 
   return (

@@ -33,7 +33,9 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useAppAuth } from './AuthProvider';
 
 type AppBarProps = {
   onMenuClick?: () => void;
@@ -62,6 +64,8 @@ type UserSearchItem = {
 const CustomAppBar: FC<AppBarProps> = ({ onMenuClick, showMenu = false }) => {
   const isMobile = useMediaQuery('(max-width:600px)', { noSsr: true });
   const { mode, toggleMode } = useThemeMode();
+  const router = useRouter();
+  const { user, profile, logout } = useAppAuth();
   const t = useTranslations('app');
   const searchBg = mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
   const iconBtnSx = {
@@ -81,6 +85,9 @@ const CustomAppBar: FC<AppBarProps> = ({ onMenuClick, showMenu = false }) => {
   const [notifAnchorEl, setNotifAnchorEl] = useState<null | HTMLElement>(null);
   const menuOpen = Boolean(anchorEl);
   const notifOpen = Boolean(notifAnchorEl);
+  const userDisplayName = profile?.displayName || user?.displayName || user?.email || 'Admin';
+  const userEmail = user?.email || 'admin@example.com';
+  const avatarLetter = userDisplayName.charAt(0).toUpperCase();
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -101,6 +108,12 @@ const CustomAppBar: FC<AppBarProps> = ({ onMenuClick, showMenu = false }) => {
   const handleSearchClose = () => {
     setSearchOpen(false);
     setSearchQuery('');
+  };
+
+  const handleLogout = async () => {
+    handleMenuClose();
+    await logout();
+    router.replace('/login');
   };
 
   useEffect(() => {
@@ -260,10 +273,10 @@ const CustomAppBar: FC<AppBarProps> = ({ onMenuClick, showMenu = false }) => {
             aria-haspopup="true"
             aria-expanded={menuOpen ? 'true' : undefined}
           >
-            <Avatar alt="Abdullah" sx={{ width: 32, height: 32 }}>A</Avatar>
+            <Avatar alt={userDisplayName} sx={{ width: 32, height: 32 }}>{avatarLetter}</Avatar>
             {!isMobile && (
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                Abdullah AL SALLOUM
+                {userDisplayName}
               </Typography>
             )}
             {!isMobile && <ExpandMoreIcon fontSize="small" />}
@@ -288,18 +301,18 @@ const CustomAppBar: FC<AppBarProps> = ({ onMenuClick, showMenu = false }) => {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, px: 2, py: 1.5 }}>
-          <Avatar alt="Abdullah" sx={{ width: 40, height: 40 }}>A</Avatar>
+          <Avatar alt={userDisplayName} sx={{ width: 40, height: 40 }}>{avatarLetter}</Avatar>
           <Box sx={{ minWidth: 0 }}>
             <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-              Abdullah AL SALLOUM
+              {userDisplayName}
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              abdullah@example.com
+              {userEmail}
             </Typography>
           </Box>
         </Box>
         <Divider />
-        <MenuItem onClick={handleMenuClose}>
+        <MenuItem component={Link} href="/profile" onClick={handleMenuClose}>
           <ListItemIcon>
             <PersonOutlineIcon fontSize="small" />
           </ListItemIcon>
@@ -312,7 +325,7 @@ const CustomAppBar: FC<AppBarProps> = ({ onMenuClick, showMenu = false }) => {
           {t('accountSettings')}
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleMenuClose}>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <LogoutIcon fontSize="small" />
           </ListItemIcon>

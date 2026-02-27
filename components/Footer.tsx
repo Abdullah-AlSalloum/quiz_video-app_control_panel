@@ -1,7 +1,17 @@
+"use client";
+
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { usePathname } from 'next/navigation';
 
-const Footer = () => (
+const Footer = () => {
+  const pathname = usePathname();
+
+  if (pathname === '/login') {
+    return null;
+  }
+
+  return (
   <Box
     component="footer"
     sx={{
@@ -42,6 +52,7 @@ const Footer = () => (
       </Box>
     </Typography>
   </Box>
-);
+  );
+};
 
 export default Footer;
